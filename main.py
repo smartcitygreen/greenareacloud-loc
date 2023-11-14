@@ -304,7 +304,7 @@ def addfield():
         userid = current_user.get_id()
         
 
-        # polygon = polygon_and_name["newfield"]["geojson"]["geometry"]["coordinates"][0]
+        # polygon = polygons_and_name["newfield"]["geojson"]["geometry"]["coordinates"][0]
         global polygon_corrected
         polygon_corrected= polygon.copy()
         for i in range(len(polygon_corrected)):
