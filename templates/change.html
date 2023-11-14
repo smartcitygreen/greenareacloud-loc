@@ -215,17 +215,17 @@ div.mapbtns{
     <script>
         var map = L.map('map').setView([24.8607, 67.0011], 14);
         // Set up the OSM layer
-        googleHybrid = L.tileLayer('https://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}', {
+        googleHybrid = L.tileLayer('https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
             maxZoom: 20,
             subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
         }).addTo(map);
         // map.createPane("snapshot-pane");
-        const snapshotOptions = {
-  hideElementsWithSelectors: [
-    ".leaflet-control-container"
-  ],
-  hidden: true
-};
+//         const snapshotOptions = {
+//   hideElementsWithSelectors: [
+//     ".leaflet-control-container"
+//   ],
+//   hidden: true
+// };
 
   
     // Add takescreenshot function to button

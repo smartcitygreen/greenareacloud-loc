@@ -6,7 +6,7 @@ import json
 # from flask_firebase import FirebaseAuth update
 import firebase_admin.auth as auth
 from firebase_admin import credentials
-from firebase_admin import storage as strg
+# from firebase_admin import storage as strg
 import firebase_admin
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 import ee
@@ -45,7 +45,10 @@ cloud_sql_connection_name = 'instant-node-238517:europe-west1:vault-cold'
 app.config["SQLALCHEMY_DATABASE_URI"]= f"mysql+pymysql://{db_user}:{db_pass}@34.79.136.221:3306/{db_name}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"]= True
 app.config["GOOGLE_APPLICATION_CREDENTIALS"]="instant-node-238517-firebase-adminsdk-tiqdt-a7fbecd401.json"
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="instant-node-238517-firebase-adminsdk-tiqdt-a7fbecd401.json"
+file_path = os.path.realpath(__file__)
+dir_path = os.path.dirname(file_path)
+keyfilepath=os.path.join(dir_path, 'instant-node-238517-firebase-adminsdk-tiqdt-a7fbecd401.json')
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"]= keyfilepath
 app.config["GCLOUD_PROJECT"] = "My First Project"
 
 # app.config['SQLALCHEMY_DATABASE_URI'] =\
@@ -279,7 +282,7 @@ def move_files_in_folder_to_cloud_storage(bucket_name, src_dir,dest_dir):
         for filename in os.listdir(src_dir):
             file_pth = os.path.join(src_dir, filename)
             if(not(storage.Blob(bucket=bucket, name=os.path.join(dest_dir,filename)).exists())):
-                blob = bucket.blob(os.path.join(dest_dir,filename))
+                blob = bucket.blob(dest_dir+'/'+filename)
                 blob.upload_from_filename(file_pth)
             # print("File {} uploaded to {}.".format(filename, bucket_name))
         shutil.rmtree(src_dir)
@@ -473,612 +476,612 @@ def code():
 
 
     # Note: The call returns a response only when the iterator is consumed.
-        q_time = datetime.datetime.strptime(q, "%Y-%m-%d")
-        neighbouring_dates=[]
-        for n in range(-5,5):
-            neighbouring_date=q_time + datetime.timedelta(days=n)
-            neighbouring_date=neighbouring_date.strftime("%Y-%m-%d")
-            neighbouring_dates.append(prefix+neighbouring_date+".png")
-        match = [d for d in fieldfilescloud if d in neighbouring_dates]
-        if not match:
+        # q_time = datetime.datetime.strptime(q, "%Y-%m-%d")
+        # neighbouring_dates=[]
+        # for n in range(-5,5):
+        #     neighbouring_date=q_time + datetime.timedelta(days=n)
+        #     neighbouring_date=neighbouring_date.strftime("%Y-%m-%d")
+        #     neighbouring_dates.append(prefix+neighbouring_date+".png")
+        # match = [d for d in fieldfilescloud if d in neighbouring_dates]
+        # if not match:
 
+    # define the image
+        # Define the area
+        area = ee.Geometry.Polygon([fieldCoords])
         # define the image
-            # Define the area
-            area = ee.Geometry.Polygon([fieldCoords])
-            # define the image
-            print(q , w)
+        print(q , w)
 
-            #coll = ee.ImageCollection("LANDSAT/LC08/C01/T1_SR").filterDate("" + q + "", "" + w + "")
-            
-            coll = ee.ImageCollection("COPERNICUS/S2_SR").filterDate("" + q + "", "" + w + "")
-        #coll = ee.ImageCollection("LANDSAT/LC08/C01/T1_SR")
+        #coll = ee.ImageCollection("LANDSAT/LC08/C01/T1_SR").filterDate("" + q + "", "" + w + "")
+        
+        coll = ee.ImageCollection("COPERNICUS/S2_SR").filterDate("" + q + "", "" + w + "")
+    #coll = ee.ImageCollection("LANDSAT/LC08/C01/T1_SR")
 
-            image_area = coll.filterBounds(area)
-            img = image_area.median()
+        image_area = coll.filterBounds(area)
+        img = image_area.median()
 
-            '''first three bands map to R, G, B, respectively, and stretched to [0, 1] 
-            since the bands are float data type. This means that the 
-            coastal aerosol band ('B1') is rendered in red, the blue band ('B2') is rendered in green, 
-            and the green band ('B3') is rendered in blue. To render the image as a true-color composite, 
-            you need to tell Earth Engine to use the Landsat 8 bands 'B4', 'B3', and 'B2' for R, G, and B, respectively.
-            source: https://developers.google.com/earth-engine/tutorials/tutorial_api_04'''
+        '''first three bands map to R, G, B, respectively, and stretched to [0, 1] 
+        since the bands are float data type. This means that the 
+        coastal aerosol band ('B1') is rendered in red, the blue band ('B2') is rendered in green, 
+        and the green band ('B3') is rendered in blue. To render the image as a true-color composite, 
+        you need to tell Earth Engine to use the Landsat 8 bands 'B4', 'B3', and 'B2' for R, G, and B, respectively.
+        source: https://developers.google.com/earth-engine/tutorials/tutorial_api_04'''
 
-            bands = ["B4", "B3", "B2"]
-            band_outputs = {}
-            #red
-            for band in bands:
-                try:
-                    image = img.select(band).rename(["temp"])
-                except ee.ee_exception.EEException:
-                    
-                    continue
-
-
-                latlon = ee.Image.pixelLonLat().addBands(image)     #Creates an image with two bands named 'longitude' and 'latitude', containing the longitude and latitude at each pixel, in degrees.
-
-                latlon = latlon.reduceRegion(                       #Apply a reducer to all the pixels in a specific region.
-                    reducer=ee.Reducer.toList(),
-                    geometry=area,
-                    maxPixels=1e8,
-                    scale=2)
-
-                data = np.array((ee.Array(latlon.get("temp")).getInfo()))       #getting an array of pixel data
-                lats = np.array((ee.Array(latlon.get("latitude")).getInfo()))   #getting an array of lat data
-                lons = np.array((ee.Array(latlon.get("longitude")).getInfo())) 
-                # print( data)
-                # print(lats) #getting an array of lon data
-                # print(lons)
-
-                #get the unique coordinates
-                uniqueLats = np.unique(lats)
-                # print(uniqueLats)
-                uniqueLons = np.unique(lons)
-                # print(uniqueLons)
-
-                #get number of columns and rows from coordinates
-                ncols = len(uniqueLons)
-                # print( ncols)
-                nrows = len(uniqueLats)
-                # print(nrows)
-
-                #determine pixelsizes
-                ys = uniqueLats[1] - uniqueLats[0]
-                # print(  ys)
-                xs = uniqueLons[1] - uniqueLons[0]
-                # print(xs)
-
-                #create an array with dimensions of image
-                arr = np.zeros([nrows, ncols], np.float32)  # -9999
+        bands = ["B4", "B3", "B2"]
+        band_outputs = {}
+        #red
+        for band in bands:
+            try:
+                image = img.select(band).rename(["temp"])
+            except ee.ee_exception.EEException:
                 
-                # fill the array with values
-                counter = 0
-                for y in range(0, len(arr), 1):
-                    for x in range(0, len(arr[0]), 1):
-                        if lats[counter] == uniqueLats[y] and lons[counter] == uniqueLons[x] and counter < len(lats) - 1:
-                            arr[len(uniqueLats) - 1 - y, x] = data[counter]  # we start from lower left corner
-                            counter += 1
-                band_outputs[band] = arr
-                # print(arr)
-            if not band_outputs:
-                print("No valid bands found for this image date")
-        # do something else or skip this image date
-
-            else: 
-                r = np.expand_dims(band_outputs["B4"], -1).astype("float32")            #expanding the array
-            g = np.expand_dims(band_outputs["B3"], -1).astype("float32")
-            b = np.expand_dims(band_outputs["B2"], -1).astype("float32")
-            rgb = np.concatenate((r, g, b), axis=2) / 3000                          #joining r,g,b arrays into one array called rgb
-
-            coll = ee.ImageCollection("COPERNICUS/S2_SR").filterDate("" + q + "", "" + w + "")
-            image_area = coll.filterBounds(area)
-            # print("image_area", image_area)
-            img = image_area.median()
-            # print("img", img)
+                continue
 
 
+            latlon = ee.Image.pixelLonLat().addBands(image)     #Creates an image with two bands named 'longitude' and 'latitude', containing the longitude and latitude at each pixel, in degrees.
 
-        
-            RED = img.select("B4")                                                  #taking the red band
-            NIR = img.select("B8")   
-            SWIR = img.select("B11")  
-            Rededge = img.select("B5") 
-            
-
-            
-            
-            NDVI = ee.Image(NIR.subtract(RED).divide(NIR.add(RED)))   #taking the near infrared band
-            NDMI = ee.Image(NIR.subtract(SWIR).divide(NIR.add(SWIR)))  
-            NDRE = ee.Image(NIR.subtract(Rededge).divide(NIR.add(Rededge)))  
-            # MSAVI = ee.Image((2 * NIR + 1 - sqrt(pow((2 * NIR + 1), 2) - 8 * (NIR - RED)) ) / 2)
-            MSAVI =ee.Image(NIR.multiply(2).add(1).subtract(NIR.multiply(2).add(1).pow(2).subtract(NIR.subtract(RED).multiply(8)).sqrt()).divide(2))
-            # print("NDVI", NDVI)           #making NVDI image
-            #get the lat lon and add the ndvi
-            latlonvi = ee.Image.pixelLonLat().addBands(NDVI)
-            latlonmi = ee.Image.pixelLonLat().addBands(NDMI)
-            latlonre = ee.Image.pixelLonLat().addBands(NDRE)
-            latlonms= ee.Image.pixelLonLat().addBands(MSAVI)
-            # print(" latlon", latlon)
-            #apply reducer to list
-            latlonvi = latlonvi.reduceRegion(
+            latlon = latlon.reduceRegion(                       #Apply a reducer to all the pixels in a specific region.
                 reducer=ee.Reducer.toList(),
                 geometry=area,
                 maxPixels=1e8,
                 scale=2)
-            latlonmi = latlonmi.reduceRegion(
-                reducer=ee.Reducer.toList(),
-                geometry=area,
-                maxPixels=1e8,
-                scale=2)
-            latlonre = latlonre.reduceRegion(
-                reducer=ee.Reducer.toList(),
-                geometry=area,
-                maxPixels=1e8,
-                scale=2)
-            latlonms = latlonms.reduceRegion(
-                reducer=ee.Reducer.toList(),
-                geometry=area,
-                maxPixels=1e8,
-                scale=2)
-            datavi = np.array((ee.Array(latlonvi.get("B8")).getInfo()))                 #getting an array of pixel data from near infrared band
-            latsvi = np.array((ee.Array(latlonvi.get("latitude")).getInfo()))           #getting an array of lat data
-            lonsvi = np.array((ee.Array(latlonvi.get("longitude")).getInfo()))     
-            print("NDVI")
-            # print( "data", datavi)
-            # print("lats",latsvi) 
-            # print("lons",lonsvi)    
-            # print("data.shape",datavi.shape)
+
+            data = np.array((ee.Array(latlon.get("temp")).getInfo()))       #getting an array of pixel data
+            lats = np.array((ee.Array(latlon.get("latitude")).getInfo()))   #getting an array of lat data
+            lons = np.array((ee.Array(latlon.get("longitude")).getInfo())) 
+            # print( data)
+            # print(lats) #getting an array of lon data
+            # print(lons)
+
             #get the unique coordinates
-            uniqueLatsvi = np.unique(latsvi)
-            uniqueLonsvi = np.unique(lonsvi)
-            # print(uniqueLatsvi)
-            # print(uniqueLonsvi)
-            #get number of columns and rows from coordinates
-            ncolsvi = len(uniqueLonsvi)
-            print(ncolsvi)
-            nrowsvi = len(uniqueLatsvi)
-            print(nrowsvi)
-            #determine pixelsizes
-            ysvi = uniqueLatsvi[1] - uniqueLatsvi[0]
-            xsvi = uniqueLonsvi[1] - uniqueLonsvi[0]
-
-            #create an array with dimensions of image
-            arrvi = np.empty([nrowsvi, ncolsvi], np.float32)  # -9999
-            arrvi[:] = np.nan
-            # print(len(arr))
-            #fill the array with values
-            counter = 0
-            for y in range(0, len(arrvi), 1):
-                for x in range(0, len(arrvi[0]), 1):
-                    # print("len(arr[0])",len(arr[0]))
-                    if latsvi[counter] == uniqueLatsvi[y] and lonsvi[counter] == uniqueLonsvi[x] and counter < len(latsvi) - 1:
-                        # print(len(uniqueLats) - 1 - y, x)
-                        arrvi[len(uniqueLatsvi) - 1 - y, x] = datavi[counter]  #we start from lower left corner
-                        counter += 1
-
-
-            #MASKING
-            # import json
-            ndvi = arrvi.copy()
-            arrayvin=ndvi.tolist()
-            # ndvis = arr.copy()
-            # print('arr =',arr)
-            import json
-            # arrayvin = json.dumps(ndvi.tolist())  
-            arrayvi.append(arrayvin)
-            # print(arrayvi)
-        
-
-    ################# NDMI ###############################
-            datami = np.array((ee.Array(latlonmi.get("B8")).getInfo()))                 #getting an array of pixel data from near infrared band
-            latsmi = np.array((ee.Array(latlonmi.get("latitude")).getInfo()))           #getting an array of lat data
-            lonsmi = np.array((ee.Array(latlonmi.get("longitude")).getInfo()))     
-            print("NDMI")
-            # print( "data", datami)
-            # print("lats",latsmi) 
-            # print("lons",lonsmi)    
-            # print("data.shape",datami.shape)
-            #get the unique coordinates
-            uniqueLatsmi = np.unique(latsmi)
-            uniqueLonsmi = np.unique(lonsmi)
-            # print(uniqueLatsmi)
-            # print(uniqueLonsmi)
-            
+            uniqueLats = np.unique(lats)
+            # print(uniqueLats)
+            uniqueLons = np.unique(lons)
+            # print(uniqueLons)
 
             #get number of columns and rows from coordinates
-            ncolsmi = len(uniqueLonsmi)
-            print(ncolsmi)
-            
-            nrowsmi = len(uniqueLatsmi)
-            print(nrowsmi)
-            
+            ncols = len(uniqueLons)
+            # print( ncols)
+            nrows = len(uniqueLats)
+            # print(nrows)
 
             #determine pixelsizes
-            ysmi = uniqueLatsmi[1] - uniqueLatsmi[0]
-            xsmi = uniqueLonsmi[1] - uniqueLonsmi[0]
+            ys = uniqueLats[1] - uniqueLats[0]
+            # print(  ys)
+            xs = uniqueLons[1] - uniqueLons[0]
+            # print(xs)
 
             #create an array with dimensions of image
-            arrmi = np.empty([nrowsmi, ncolsmi], np.float32)  # -9999
-            arrmi[:] = np.nan
-            # print(len(arr))
-            #fill the array with values
+            arr = np.zeros([nrows, ncols], np.float32)  # -9999
+            
+            # fill the array with values
             counter = 0
-            for y in range(0, len(arrmi), 1):
-                for x in range(0, len(arrmi[0]), 1):
-                    # print("len(arr[0])",len(arr[0]))
-                    if latsmi[counter] == uniqueLatsmi[y] and lonsmi[counter] == uniqueLonsmi[x] and counter < len(latsmi) - 1:
-                        # print(len(uniqueLats) - 1 - y, x)
-                        arrmi[len(uniqueLatsmi) - 1 - y, x] = datami[counter]  #we start from lower left corner
+            for y in range(0, len(arr), 1):
+                for x in range(0, len(arr[0]), 1):
+                    if lats[counter] == uniqueLats[y] and lons[counter] == uniqueLons[x] and counter < len(lats) - 1:
+                        arr[len(uniqueLats) - 1 - y, x] = data[counter]  # we start from lower left corner
                         counter += 1
+            band_outputs[band] = arr
+            # print(arr)
+        if not band_outputs:
+            print("No valid bands found for this image date")
+    # do something else or skip this image date
 
-            #MASKING
-            # import json
+        else: 
+            r = np.expand_dims(band_outputs["B4"], -1).astype("float32")            #expanding the array
+        g = np.expand_dims(band_outputs["B3"], -1).astype("float32")
+        b = np.expand_dims(band_outputs["B2"], -1).astype("float32")
+        rgb = np.concatenate((r, g, b), axis=2) / 3000                          #joining r,g,b arrays into one array called rgb
+
+        coll = ee.ImageCollection("COPERNICUS/S2_SR").filterDate("" + q + "", "" + w + "")
+        image_area = coll.filterBounds(area)
+        # print("image_area", image_area)
+        img = image_area.median()
+        # print("img", img)
+
+
+
+    
+        RED = img.select("B4")                                                  #taking the red band
+        NIR = img.select("B8")   
+        SWIR = img.select("B11")  
+        Rededge = img.select("B5") 
+        
 
         
         
-            # print('arr =',arr)
+        NDVI = ee.Image(NIR.subtract(RED).divide(NIR.add(RED)))   #taking the near infrared band
+        NDMI = ee.Image(NIR.subtract(SWIR).divide(NIR.add(SWIR)))  
+        NDRE = ee.Image(NIR.subtract(Rededge).divide(NIR.add(Rededge)))  
+        # MSAVI = ee.Image((2 * NIR + 1 - sqrt(pow((2 * NIR + 1), 2) - 8 * (NIR - RED)) ) / 2)
+        MSAVI =ee.Image(NIR.multiply(2).add(1).subtract(NIR.multiply(2).add(1).pow(2).subtract(NIR.subtract(RED).multiply(8)).sqrt()).divide(2))
+        # print("NDVI", NDVI)           #making NVDI image
+        #get the lat lon and add the ndvi
+        latlonvi = ee.Image.pixelLonLat().addBands(NDVI)
+        latlonmi = ee.Image.pixelLonLat().addBands(NDMI)
+        latlonre = ee.Image.pixelLonLat().addBands(NDRE)
+        latlonms= ee.Image.pixelLonLat().addBands(MSAVI)
+        # print(" latlon", latlon)
+        #apply reducer to list
+        latlonvi = latlonvi.reduceRegion(
+            reducer=ee.Reducer.toList(),
+            geometry=area,
+            maxPixels=1e8,
+            scale=2)
+        latlonmi = latlonmi.reduceRegion(
+            reducer=ee.Reducer.toList(),
+            geometry=area,
+            maxPixels=1e8,
+            scale=2)
+        latlonre = latlonre.reduceRegion(
+            reducer=ee.Reducer.toList(),
+            geometry=area,
+            maxPixels=1e8,
+            scale=2)
+        latlonms = latlonms.reduceRegion(
+            reducer=ee.Reducer.toList(),
+            geometry=area,
+            maxPixels=1e8,
+            scale=2)
+        datavi = np.array((ee.Array(latlonvi.get("B8")).getInfo()))                 #getting an array of pixel data from near infrared band
+        latsvi = np.array((ee.Array(latlonvi.get("latitude")).getInfo()))           #getting an array of lat data
+        lonsvi = np.array((ee.Array(latlonvi.get("longitude")).getInfo()))     
+        print("NDVI")
+        # print( "data", datavi)
+        # print("lats",latsvi) 
+        # print("lons",lonsvi)    
+        # print("data.shape",datavi.shape)
+        #get the unique coordinates
+        uniqueLatsvi = np.unique(latsvi)
+        uniqueLonsvi = np.unique(lonsvi)
+        # print(uniqueLatsvi)
+        # print(uniqueLonsvi)
+        #get number of columns and rows from coordinates
+        ncolsvi = len(uniqueLonsvi)
+        print(ncolsvi)
+        nrowsvi = len(uniqueLatsvi)
+        print(nrowsvi)
+        #determine pixelsizes
+        ysvi = uniqueLatsvi[1] - uniqueLatsvi[0]
+        xsvi = uniqueLonsvi[1] - uniqueLonsvi[0]
 
-            ndmi = ((np.around(arrmi.copy(),decimals=1))+0.02)
-            ndmis = np.around(arrmi.copy(),decimals=1)
-            # ndvis = arr.copy()
-            # print('arr =',arr)
-            # arraymi = json.dumps(ndmis.tolist())  
+        #create an array with dimensions of image
+        arrvi = np.empty([nrowsvi, ncolsvi], np.float32)  # -9999
+        arrvi[:] = np.nan
+        # print(len(arr))
+        #fill the array with values
+        counter = 0
+        for y in range(0, len(arrvi), 1):
+            for x in range(0, len(arrvi[0]), 1):
+                # print("len(arr[0])",len(arr[0]))
+                if latsvi[counter] == uniqueLatsvi[y] and lonsvi[counter] == uniqueLonsvi[x] and counter < len(latsvi) - 1:
+                    # print(len(uniqueLats) - 1 - y, x)
+                    arrvi[len(uniqueLatsvi) - 1 - y, x] = datavi[counter]  #we start from lower left corner
+                    counter += 1
+
+
+        #MASKING
+        # import json
+        ndvi = arrvi.copy()
+        arrayvin=ndvi.tolist()
+        # ndvis = arr.copy()
+        # print('arr =',arr)
+        import json
+        # arrayvin = json.dumps(ndvi.tolist())  
+        arrayvi.append(arrayvin)
+        # print(arrayvi)
+    
+
+################# NDMI ###############################
+        datami = np.array((ee.Array(latlonmi.get("B8")).getInfo()))                 #getting an array of pixel data from near infrared band
+        latsmi = np.array((ee.Array(latlonmi.get("latitude")).getInfo()))           #getting an array of lat data
+        lonsmi = np.array((ee.Array(latlonmi.get("longitude")).getInfo()))     
+        print("NDMI")
+        # print( "data", datami)
+        # print("lats",latsmi) 
+        # print("lons",lonsmi)    
+        # print("data.shape",datami.shape)
+        #get the unique coordinates
+        uniqueLatsmi = np.unique(latsmi)
+        uniqueLonsmi = np.unique(lonsmi)
+        # print(uniqueLatsmi)
+        # print(uniqueLonsmi)
         
-            arraymin=ndmis.tolist() 
-            arraymi.append(arraymin)
-    ################################  NDRE  ######################################    
 
-            datare = np.array((ee.Array(latlonre.get("B8")).getInfo()))                 #getting an array of pixel data from near infrared band
-            latsre = np.array((ee.Array(latlonre.get("latitude")).getInfo()))           #getting an array of lat data
-            lonsre = np.array((ee.Array(latlonre.get("longitude")).getInfo()))     
-            print("NDRE")
-            # print( "data", datavi)
-            # print("lats",latsvi) 
-            # print("lons",lonsvi)    
-            # print("data.shape",datavi.shape)
-            #get the unique coordinates
-            uniqueLatsre = np.unique(latsre)
-            uniqueLonsre = np.unique(lonsre)
-            # print(uniqueLatsvi)
-            # print(uniqueLonsvi)
+        #get number of columns and rows from coordinates
+        ncolsmi = len(uniqueLonsmi)
+        print(ncolsmi)
+        
+        nrowsmi = len(uniqueLatsmi)
+        print(nrowsmi)
+        
+
+        #determine pixelsizes
+        ysmi = uniqueLatsmi[1] - uniqueLatsmi[0]
+        xsmi = uniqueLonsmi[1] - uniqueLonsmi[0]
+
+        #create an array with dimensions of image
+        arrmi = np.empty([nrowsmi, ncolsmi], np.float32)  # -9999
+        arrmi[:] = np.nan
+        # print(len(arr))
+        #fill the array with values
+        counter = 0
+        for y in range(0, len(arrmi), 1):
+            for x in range(0, len(arrmi[0]), 1):
+                # print("len(arr[0])",len(arr[0]))
+                if latsmi[counter] == uniqueLatsmi[y] and lonsmi[counter] == uniqueLonsmi[x] and counter < len(latsmi) - 1:
+                    # print(len(uniqueLats) - 1 - y, x)
+                    arrmi[len(uniqueLatsmi) - 1 - y, x] = datami[counter]  #we start from lower left corner
+                    counter += 1
+
+        #MASKING
+        # import json
+
+    
+    
+        # print('arr =',arr)
+
+        ndmi = ((np.around(arrmi.copy(),decimals=1))+0.02)
+        ndmis = np.around(arrmi.copy(),decimals=1)
+        # ndvis = arr.copy()
+        # print('arr =',arr)
+        # arraymi = json.dumps(ndmis.tolist())  
+    
+        arraymin=ndmis.tolist() 
+        arraymi.append(arraymin)
+################################  NDRE  ######################################    
+
+        datare = np.array((ee.Array(latlonre.get("B8")).getInfo()))                 #getting an array of pixel data from near infrared band
+        latsre = np.array((ee.Array(latlonre.get("latitude")).getInfo()))           #getting an array of lat data
+        lonsre = np.array((ee.Array(latlonre.get("longitude")).getInfo()))     
+        print("NDRE")
+        # print( "data", datavi)
+        # print("lats",latsvi) 
+        # print("lons",lonsvi)    
+        # print("data.shape",datavi.shape)
+        #get the unique coordinates
+        uniqueLatsre = np.unique(latsre)
+        uniqueLonsre = np.unique(lonsre)
+        # print(uniqueLatsvi)
+        # print(uniqueLonsvi)
+        
+
+        #get number of columns and rows from coordinates
+        ncolsre = len(uniqueLonsre)
+        print(ncolsre)
+        
+        nrowsre = len(uniqueLatsre)
+        print(nrowsre)
+        
+
+        #determine pixelsizes
+        ysvi = uniqueLatsre[1] - uniqueLatsre[0]
+        xsvi = uniqueLonsre[1] - uniqueLonsre[0]
+
+        #create an array with dimensions of image
+        arrre = np.empty([nrowsre, ncolsre], np.float32)  # -9999
+        arrre[:] = np.nan
+        # print(len(arr))
+        #fill the array with values
+        counter = 0
+        for y in range(0, len(arrre), 1):
+            for x in range(0, len(arrre[0]), 1):
+                # print("len(arr[0])",len(arr[0]))
+                if latsre[counter] == uniqueLatsre[y] and lonsre[counter] == uniqueLonsre[x] and counter < len(latsre) - 1:
+                    # print(len(uniqueLats) - 1 - y, x)
+                    arrre[len(uniqueLatsre) - 1 - y, x] = datare[counter]  #we start from lower left corner
+                    counter += 1
+
+        #MASKING
+        # import json
+        ndre = arrre.copy()
+        # ndvis = arr.copy()
+        # print('arr =',arr)
+        import json
+        # arrayre = json.dumps(ndre.tolist())  
+        arrayren=ndre.tolist() 
+        arrayre.append(arrayren)
+
+    ################################  MSAVI ######################################    
+
+        datams = np.array((ee.Array(latlonms.get("B8")).getInfo()))                 #getting an array of pixel data from near infrared band
+        latsms = np.array((ee.Array(latlonms.get("latitude")).getInfo()))           #getting an array of lat data
+        lonsms = np.array((ee.Array(latlonms.get("longitude")).getInfo()))     
+        print("MSAVI")
+        # print( "data", datavi)
+        # print("lats",latsvi) 
+        # print("lons",lonsvi)    
+        # print("data.shape",datavi.shape)
+        #get the unique coordinates
+        uniqueLatsms = np.unique(latsms)
+        uniqueLonsms = np.unique(lonsms)
+        # print(uniqueLatsvi)
+        # print(uniqueLonsvi)
+        
+
+        #get number of columns and rows from coordinates
+        ncolsms = len(uniqueLonsms)
+        print(ncolsms)
+        
+        nrowsms = len(uniqueLatsms)
+        print(nrowsms)
+        
+
+        #determine pixelsizes
+        ysms = uniqueLatsms[1] - uniqueLatsms[0]
+        xsms = uniqueLonsms[1] - uniqueLonsms[0]
+
+        #create an array with dimensions of image
+        arrms = np.empty([nrowsms, ncolsms], np.float32)  # -9999
+        arrms[:] = np.nan
+        # print(len(arr))
+        #fill the array with values
+        counter = 0
+        for y in range(0, len(arrms), 1):
+            for x in range(0, len(arrms[0]), 1):
+                # print("len(arr[0])",len(arr[0]))
+                if latsms[counter] == uniqueLatsms[y] and lonsms[counter] == uniqueLonsms[x] and counter < len(latsms) - 1:
+                    # print(len(uniqueLats) - 1 - y, x)
+                    arrms[len(uniqueLatsms) - 1 - y, x] = datams[counter]  #we start from lower left corner
+                    counter += 1
+
+        #MASKING
+        # import json
+        msavi= arrms.copy()
+        # ndvis = arr.copy()
+        # print('arr =',arr)
+        import json
+        # arrayms = json.dumps(msavi.tolist())    
+        arraymsn=msavi.tolist() 
+        arrayms.append(arraymsn)
+###############################################################
+        np.savetxt("./tmp/ndvi-arr.csv", ndvi, delimiter=",")
+        np.savetxt("./tmp/ndmi-arr.csv", ndmi, delimiter=",")
+        np.savetxt("./tmp/ndre-arr.csv", ndre, delimiter=",")
+        np.savetxt("./tmp/msavi-arr.csv", msavi, delimiter=",")
+    
+        print("ndvi")
+        print("ndvi.shape", ndvi.shape)
+        # print("max", np.max(ndvi))
+        maxvi =np.max(ndvi)
+        minvi = np.min(ndvi)
+        avgvi= np.average(ndvi)
+        print("max", np.max(ndvi))
+        print("min", np.min(ndvi))
+        print("average", np.average(ndvi))
+
+        print("ndmi")
+        print("ndmi.shape", ndmi.shape)
+        # print("max", np.max(ndvi))
+        maxmi =np.max(ndmi)
+        minmi = np.min(ndmi)
+        avgmi= np.average(ndmi)
+        print("max", np.max(ndmi))
+        print("min", np.min(ndmi))
+        print("average", np.average(ndmi))
+
+        print("ndre")
+        print("ndre.shape", ndre.shape)
+        # print("max", np.max(ndvi))
+        maxre =np.max(ndre)
+        minre = np.min(ndre)
+        avgre= np.average(ndre)
+        print("max", np.max(ndre))
+        print("min", np.min(ndre))
+        print("average", np.average(ndre))
+
+        print("msavi")
+        print("msavi.shape", msavi.shape)
+        # print("max", np.max(ndvi))
+        maxms =np.max(msavi)
+        minms = np.min(msavi)
+        avgms= np.average(msavi)
+        print("max", np.max(msavi))
+        print("min", np.min(msavi))
+        print("average", np.average(msavi))
+        # print("mean", np.mean(ndvi))
+        # print ("min value element : ", my_data.min(axis=0)[1])
+        # print ("max value element : ", my_data.max(axis=0)[2])
+        # minVal, maxVal = [], []
+        # for i in data:
+        #     minVal.append(i[1])
+        #     maxVal.append(i[2])
+        if not os.path.exists("./tmp/ndmi"):
+            os.mkdir("./tmp/ndmi")
+        if not os.path.exists("./tmp/ndvi"):
+            os.mkdir("./tmp/ndvi")
+        if not os.path.exists("./tmp/ndre"):
+            os.mkdir("./tmp/ndre")
+        if not os.path.exists("./tmp/msavi"):
+            os.mkdir("./tmp/msavi")
+
+        # print min(minVal)
+        # print max(maxVal)
+        outputmi = rgb.copy()
+        # output[:, :, 0] = blue
+        # output[:, :, 2] = red
+        outputmi *= 255
+        outputmi = cv2.cvtColor(outputmi, cv2.COLOR_BGR2RGB)
+        # cv2.imwrite("/tmp/ndmi/{}.jpg".format(a), outputmi)
+
+
+        outputre = rgb.copy()
+        # output[:, :, 0] = blue
+        # output[:, :, 2] = red
+        outputre *= 255
+        outputre = cv2.cvtColor(outputre, cv2.COLOR_BGR2RGB)
+        # cv2.imwrite("/tmp/ndre/{}.jpg".format(a), outputre)
+
+        outputms = rgb.copy()
+        # output[:, :, 0] = blue
+        # output[:, :, 2] = red
+        outputms *= 255
+        outputms = cv2.cvtColor(outputms, cv2.COLOR_BGR2RGB)
+        # cv2.imwrite("/tmp/msavi/{}.jpg".format(a), outputms)
+
+        ndvi[ndvi < 0.4] = 0
+        ndvi[ndvi > 0.4] = 1
+        # with np.printoptions(threshold=np.inf):
+    
+        #     print("ndvi array =", ndvi)
             
+        np.savetxt("./tmp/final-ndvi.csv", ndvi, delimiter=",")
+        # file = "final-ndvi.csv"
+        ndvi[ndvi >= 0.5] = 0
+        blue = rgb[:, :, 0]
+        red = rgb[:, :, 2]
+        blue[ndvi == 1] -= 0.5
+        red[ndvi == 1] -= 0.5
+        outputvi = rgb.copy()
+        outputvi[:, :, 0] = blue
+        outputvi[:, :, 2] = red
+        outputvi *= 255
+        outputvi = cv2.cvtColor(outputvi, cv2.COLOR_BGR2RGB)
 
-            #get number of columns and rows from coordinates
-            ncolsre = len(uniqueLonsre)
-            print(ncolsre)
-            
-            nrowsre = len(uniqueLatsre)
-            print(nrowsre)
-            
+    
+    
 
-            #determine pixelsizes
-            ysvi = uniqueLatsre[1] - uniqueLatsre[0]
-            xsvi = uniqueLonsre[1] - uniqueLonsre[0]
+        #cv2.imwrite("/Users/admin/PycharmProjects/greenarea/static/l.jpg", output)
+        #cv2.imwrite("E:/greenarea/static/l.jpg", output)
+        # cv2.imwrite("/tmp/ndvi/{}.jpg".format(a), outputvi)
 
-            #create an array with dimensions of image
-            arrre = np.empty([nrowsre, ncolsre], np.float32)  # -9999
-            arrre[:] = np.nan
-            # print(len(arr))
-            #fill the array with values
-            counter = 0
-            for y in range(0, len(arrre), 1):
-                for x in range(0, len(arrre[0]), 1):
-                    # print("len(arr[0])",len(arr[0]))
-                    if latsre[counter] == uniqueLatsre[y] and lonsre[counter] == uniqueLonsre[x] and counter < len(latsre) - 1:
-                        # print(len(uniqueLats) - 1 - y, x)
-                        arrre[len(uniqueLatsre) - 1 - y, x] = datare[counter]  #we start from lower left corner
-                        counter += 1
-
-            #MASKING
-            # import json
-            ndre = arrre.copy()
-            # ndvis = arr.copy()
-            # print('arr =',arr)
-            import json
-            # arrayre = json.dumps(ndre.tolist())  
-            arrayren=ndre.tolist() 
-            arrayre.append(arrayren)
-
-        ################################  MSAVI ######################################    
-
-            datams = np.array((ee.Array(latlonms.get("B8")).getInfo()))                 #getting an array of pixel data from near infrared band
-            latsms = np.array((ee.Array(latlonms.get("latitude")).getInfo()))           #getting an array of lat data
-            lonsms = np.array((ee.Array(latlonms.get("longitude")).getInfo()))     
-            print("MSAVI")
-            # print( "data", datavi)
-            # print("lats",latsvi) 
-            # print("lons",lonsvi)    
-            # print("data.shape",datavi.shape)
-            #get the unique coordinates
-            uniqueLatsms = np.unique(latsms)
-            uniqueLonsms = np.unique(lonsms)
-            # print(uniqueLatsvi)
-            # print(uniqueLonsvi)
-            
-
-            #get number of columns and rows from coordinates
-            ncolsms = len(uniqueLonsms)
-            print(ncolsms)
-            
-            nrowsms = len(uniqueLatsms)
-            print(nrowsms)
-            
-
-            #determine pixelsizes
-            ysms = uniqueLatsms[1] - uniqueLatsms[0]
-            xsms = uniqueLonsms[1] - uniqueLonsms[0]
-
-            #create an array with dimensions of image
-            arrms = np.empty([nrowsms, ncolsms], np.float32)  # -9999
-            arrms[:] = np.nan
-            # print(len(arr))
-            #fill the array with values
-            counter = 0
-            for y in range(0, len(arrms), 1):
-                for x in range(0, len(arrms[0]), 1):
-                    # print("len(arr[0])",len(arr[0]))
-                    if latsms[counter] == uniqueLatsms[y] and lonsms[counter] == uniqueLonsms[x] and counter < len(latsms) - 1:
-                        # print(len(uniqueLats) - 1 - y, x)
-                        arrms[len(uniqueLatsms) - 1 - y, x] = datams[counter]  #we start from lower left corner
-                        counter += 1
-
-            #MASKING
-            # import json
-            msavi= arrms.copy()
-            # ndvis = arr.copy()
-            # print('arr =',arr)
-            import json
-            # arrayms = json.dumps(msavi.tolist())    
-            arraymsn=msavi.tolist() 
-            arrayms.append(arraymsn)
-    ###############################################################
-            np.savetxt("./tmp/ndvi-arr.csv", ndvi, delimiter=",")
-            np.savetxt("./tmp/ndmi-arr.csv", ndmi, delimiter=",")
-            np.savetxt("./tmp/ndre-arr.csv", ndre, delimiter=",")
-            np.savetxt("./tmp/msavi-arr.csv", msavi, delimiter=",")
-        
-            print("ndvi")
-            print("ndvi.shape", ndvi.shape)
-            # print("max", np.max(ndvi))
-            maxvi =np.max(ndvi)
-            minvi = np.min(ndvi)
-            avgvi= np.average(ndvi)
-            print("max", np.max(ndvi))
-            print("min", np.min(ndvi))
-            print("average", np.average(ndvi))
-
-            print("ndmi")
-            print("ndmi.shape", ndmi.shape)
-            # print("max", np.max(ndvi))
-            maxmi =np.max(ndmi)
-            minmi = np.min(ndmi)
-            avgmi= np.average(ndmi)
-            print("max", np.max(ndmi))
-            print("min", np.min(ndmi))
-            print("average", np.average(ndmi))
-
-            print("ndre")
-            print("ndre.shape", ndre.shape)
-            # print("max", np.max(ndvi))
-            maxre =np.max(ndre)
-            minre = np.min(ndre)
-            avgre= np.average(ndre)
-            print("max", np.max(ndre))
-            print("min", np.min(ndre))
-            print("average", np.average(ndre))
-
-            print("msavi")
-            print("msavi.shape", msavi.shape)
-            # print("max", np.max(ndvi))
-            maxms =np.max(msavi)
-            minms = np.min(msavi)
-            avgms= np.average(msavi)
-            print("max", np.max(msavi))
-            print("min", np.min(msavi))
-            print("average", np.average(msavi))
-            # print("mean", np.mean(ndvi))
-            # print ("min value element : ", my_data.min(axis=0)[1])
-            # print ("max value element : ", my_data.max(axis=0)[2])
-            # minVal, maxVal = [], []
-            # for i in data:
-            #     minVal.append(i[1])
-            #     maxVal.append(i[2])
-            if not os.path.exists("./tmp/ndmi"):
-                os.mkdir("./tmp/ndmi")
-            if not os.path.exists("./tmp/ndvi"):
-                os.mkdir("./tmp/ndvi")
-            if not os.path.exists("./tmp/ndre"):
-                os.mkdir("./tmp/ndre")
-            if not os.path.exists("./tmp/msavi"):
-                os.mkdir("./tmp/msavi")
-
-            # print min(minVal)
-            # print max(maxVal)
-            outputmi = rgb.copy()
-            # output[:, :, 0] = blue
-            # output[:, :, 2] = red
-            outputmi *= 255
-            outputmi = cv2.cvtColor(outputmi, cv2.COLOR_BGR2RGB)
-            # cv2.imwrite("/tmp/ndmi/{}.jpg".format(a), outputmi)
-
-
-            outputre = rgb.copy()
-            # output[:, :, 0] = blue
-            # output[:, :, 2] = red
-            outputre *= 255
-            outputre = cv2.cvtColor(outputre, cv2.COLOR_BGR2RGB)
-            # cv2.imwrite("/tmp/ndre/{}.jpg".format(a), outputre)
-
-            outputms = rgb.copy()
-            # output[:, :, 0] = blue
-            # output[:, :, 2] = red
-            outputms *= 255
-            outputms = cv2.cvtColor(outputms, cv2.COLOR_BGR2RGB)
-            # cv2.imwrite("/tmp/msavi/{}.jpg".format(a), outputms)
-
-            ndvi[ndvi < 0.4] = 0
-            ndvi[ndvi > 0.4] = 1
-            # with np.printoptions(threshold=np.inf):
-        
-            #     print("ndvi array =", ndvi)
-                
-            np.savetxt("./tmp/final-ndvi.csv", ndvi, delimiter=",")
-            # file = "final-ndvi.csv"
-            ndvi[ndvi >= 0.5] = 0
-            blue = rgb[:, :, 0]
-            red = rgb[:, :, 2]
-            blue[ndvi == 1] -= 0.5
-            red[ndvi == 1] -= 0.5
-            outputvi = rgb.copy()
-            outputvi[:, :, 0] = blue
-            outputvi[:, :, 2] = red
-            outputvi *= 255
-            outputvi = cv2.cvtColor(outputvi, cv2.COLOR_BGR2RGB)
-
-        
-        
-
-            #cv2.imwrite("/Users/admin/PycharmProjects/greenarea/static/l.jpg", output)
-            #cv2.imwrite("E:/greenarea/static/l.jpg", output)
-            # cv2.imwrite("/tmp/ndvi/{}.jpg".format(a), outputvi)
     
         
-            
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
-            # a = request.args.get('X', 0, type=int)
-            # b = request.args.get('Y', 0, type=int)
+        # a = request.args.get('X', 0, type=int)
+        # b = request.args.get('Y', 0, type=int)
 
-            # print(a,b)hhhhhhhhhhhhhhhhhhhhhhhhhhh
-            # CALCULATIONS
-            total_img = np.sum(rgb, axis=-1)
-            total_pixels = len(total_img[total_img != 0])
-            green_pixels = len(ndvi[ndvi != 0])
-            build_pixels = total_pixels - green_pixels
-            percent = (green_pixels / total_pixels) * 100
-            total = total_sqkm
-            green = (percent / 100) * total
-            nongreen = total - green
-            build = total_sqkm - green
-            print("percentage", percent)
-            
-
-
-            
-
-            with open('./tmp/main.csv', 'w+', newline="") as f:
-                thewriter = csv.writer(f)
-                if a == 1:
-                    thewriter.writerow(['Date', 'TotalArea', 'GreenArea', 'NongreenArea', 'Percentage', 'Coordinates'])
-                thewriter.writerow([w, total, green, nongreen, percent, fieldCoords])
-            
-            with open('./tmp/ndvi.csv', 'a', newline="") as f:
-                thewriter = csv.writer(f)
-                if a == 1:
-                    thewriter.writerow(['date', 'min','avg','max'])
-                thewriter.writerow([q,minvi,avgvi,maxvi ])
-            with open('./tmp/ndmi.csv', 'a', newline="") as f:
-                thewriter = csv.writer(f)
-                if a == 1:
-                    thewriter.writerow(['date', 'min','avg','max'])
-                thewriter.writerow([q,minmi,avgmi,maxmi ])
-            with open('./tmp/ndre.csv', 'a', newline="") as f:
-                thewriter = csv.writer(f)
-                if a == 1:
-                    thewriter.writerow(['date', 'min','avg','max'])
-                thewriter.writerow([q,minre,avgre,maxre ])
-            with open('./tmp/msavi.csv', 'a', newline="") as f:
-                thewriter = csv.writer(f)
-                if a == 1:
-                    thewriter.writerow(['date', 'min','avg','max'])
-                thewriter.writerow([q,minms,avgms,maxms ])
-
-            if not os.path.exists("./tmp/viplot"):
-                os.mkdir("./tmp/viplot")
-            if not os.path.exists("./tmp/miplot"):
-                os.mkdir("./tmp/miplot")
-            if not os.path.exists("./tmp/replot"):
-                os.mkdir("./tmp/replot")
-            if not os.path.exists("./tmp/msplot"):
-                os.mkdir("./tmp/msplot")
-            
-
-            import matplotlib
-            matplotlib.use('Agg')
-            import matplotlib.pyplot as plt
-            colorvi = pd.read_csv('./tmp/ndvi-arr.csv')
-            color_palettevi = sns.color_palette("RdYlGn",as_cmap=True)
-
-            # Pass palette to plot and set axis ranges
-            sns.heatmap(colorvi,
-                        cmap=color_palettevi,
-                        center=0.5,
-                        vmin=0,
-                        vmax=1,
-                        yticklabels=False,
-                        xticklabels=False,
-                        cbar=False
-                    )
-            plt.savefig("./tmp/viplot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
-            # plotvi= "./tmp/viplot/{}.jpg".format(a)
-            pathvi.append("/viplot/{}.png".format(q))
-
-            colormi = pd.read_csv('./tmp/ndmi-arr.csv')
-            for i in np.arange(0,1,0.1):
-                colormi[colormi == i] = i + 0.01
-            colors=["#AF998C",'#B49E95','#BAA49E','#BFAAA8','#C5B0B2','#CBB6BC','#D0BBC5', '#D6C1CF', '#CBB9D2', '#BAADD3', '#A8A0D5','#9894D6','#8788D7','#767BD8','#646ED9','#5362DA','#4356DB','#3249DC','#213DDD','#0F30DE']
-            color_palettemi = sns.color_palette(colors,as_cmap=True)
+        # print(a,b)hhhhhhhhhhhhhhhhhhhhhhhhhhh
+        # CALCULATIONS
+        total_img = np.sum(rgb, axis=-1)
+        total_pixels = len(total_img[total_img != 0])
+        green_pixels = len(ndvi[ndvi != 0])
+        build_pixels = total_pixels - green_pixels
+        percent = (green_pixels / total_pixels) * 100
+        total = total_sqkm
+        green = (percent / 100) * total
+        nongreen = total - green
+        build = total_sqkm - green
+        print("percentage", percent)
+        
 
 
-            # Pass palette to plot and set axis ranges
-            sns.heatmap(colormi,
-                        cmap=color_palettemi,
-                        center=0,
-                        vmin=-1,
-                        vmax=1,
-                        yticklabels=False,
-                        xticklabels=False,
-                        cbar=False
-                    )
-            plt.savefig("./tmp/miplot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
-            # plotmi= "./tmp/miplot/{}.jpg".format(a)
-            
-            pathmi.append("/miplot/{}.png".format(q))
+        
 
-            colorre = pd.read_csv('./tmp/ndre-arr.csv')
-            color_palettere = sns.color_palette("RdYlGn",as_cmap=True)
+        with open('./tmp/main.csv', 'w+', newline="") as f:
+            thewriter = csv.writer(f)
+            if a == 1:
+                thewriter.writerow(['Date', 'TotalArea', 'GreenArea', 'NongreenArea', 'Percentage', 'Coordinates'])
+            thewriter.writerow([w, total, green, nongreen, percent, fieldCoords])
+        
+        with open('./tmp/ndvi.csv', 'a', newline="") as f:
+            thewriter = csv.writer(f)
+            if a == 1:
+                thewriter.writerow(['date', 'min','avg','max'])
+            thewriter.writerow([q,minvi,avgvi,maxvi ])
+        with open('./tmp/ndmi.csv', 'a', newline="") as f:
+            thewriter = csv.writer(f)
+            if a == 1:
+                thewriter.writerow(['date', 'min','avg','max'])
+            thewriter.writerow([q,minmi,avgmi,maxmi ])
+        with open('./tmp/ndre.csv', 'a', newline="") as f:
+            thewriter = csv.writer(f)
+            if a == 1:
+                thewriter.writerow(['date', 'min','avg','max'])
+            thewriter.writerow([q,minre,avgre,maxre ])
+        with open('./tmp/msavi.csv', 'a', newline="") as f:
+            thewriter = csv.writer(f)
+            if a == 1:
+                thewriter.writerow(['date', 'min','avg','max'])
+            thewriter.writerow([q,minms,avgms,maxms ])
 
-            # Pass palette to plot and set axis ranges
-            sns.heatmap(colorre,
-                        cmap=color_palettere,
-                        center=0.5,
-                        vmin=0,
-                        vmax=1,
-                        yticklabels=False,
-                        xticklabels=False,
-                        cbar=False
-                    )
-            plt.savefig("./tmp/replot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
-            # plotvi= "./tmp/viplot/{}.jpg".format(a)
-            pathre.append("/replot/{}.png".format(q))
+        if not os.path.exists("./tmp/viplot"):
+            os.mkdir("./tmp/viplot")
+        if not os.path.exists("./tmp/miplot"):
+            os.mkdir("./tmp/miplot")
+        if not os.path.exists("./tmp/replot"):
+            os.mkdir("./tmp/replot")
+        if not os.path.exists("./tmp/msplot"):
+            os.mkdir("./tmp/msplot")
+        
 
-            colorms = pd.read_csv('./tmp/msavi-arr.csv')
-            color_palettems = sns.color_palette("RdYlGn",as_cmap=True)
+        import matplotlib
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
+        colorvi = pd.read_csv('./tmp/ndvi-arr.csv')
+        color_palettevi = sns.color_palette("RdYlGn",as_cmap=True)
 
-            # Pass palette to plot and set axis ranges
-            sns.heatmap(colorms,
-                        cmap=color_palettems,
-                        center=0.5,
-                        vmin=0,
-                        vmax=1,
-                        yticklabels=False,
-                        xticklabels=False,
-                        cbar=False
-                    )
-            plt.savefig("./tmp/msplot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
-            # plotvi= "./tmp/viplot/{}.jpg".format(a)
-            pathms.append("/msplot/{}.png".format(q))
-            a = a + 1
+        # Pass palette to plot and set axis ranges
+        sns.heatmap(colorvi,
+                    cmap=color_palettevi,
+                    center=0.5,
+                    vmin=0,
+                    vmax=1,
+                    yticklabels=False,
+                    xticklabels=False,
+                    cbar=False
+                )
+        plt.savefig("./tmp/viplot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
+        # plotvi= "./tmp/viplot/{}.jpg".format(a)
+        pathvi.append("/viplot/{}.png".format(q))
+
+        colormi = pd.read_csv('./tmp/ndmi-arr.csv')
+        for i in np.arange(0,1,0.1):
+            colormi[colormi == i] = i + 0.01
+        colors=["#AF998C",'#B49E95','#BAA49E','#BFAAA8','#C5B0B2','#CBB6BC','#D0BBC5', '#D6C1CF', '#CBB9D2', '#BAADD3', '#A8A0D5','#9894D6','#8788D7','#767BD8','#646ED9','#5362DA','#4356DB','#3249DC','#213DDD','#0F30DE']
+        color_palettemi = sns.color_palette(colors,as_cmap=True)
+
+
+        # Pass palette to plot and set axis ranges
+        sns.heatmap(colormi,
+                    cmap=color_palettemi,
+                    center=0,
+                    vmin=-1,
+                    vmax=1,
+                    yticklabels=False,
+                    xticklabels=False,
+                    cbar=False
+                )
+        plt.savefig("./tmp/miplot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
+        # plotmi= "./tmp/miplot/{}.jpg".format(a)
+        
+        pathmi.append("/miplot/{}.png".format(q))
+
+        colorre = pd.read_csv('./tmp/ndre-arr.csv')
+        color_palettere = sns.color_palette("RdYlGn",as_cmap=True)
+
+        # Pass palette to plot and set axis ranges
+        sns.heatmap(colorre,
+                    cmap=color_palettere,
+                    center=0.5,
+                    vmin=0,
+                    vmax=1,
+                    yticklabels=False,
+                    xticklabels=False,
+                    cbar=False
+                )
+        plt.savefig("./tmp/replot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
+        # plotvi= "./tmp/viplot/{}.jpg".format(a)
+        pathre.append("/replot/{}.png".format(q))
+
+        colorms = pd.read_csv('./tmp/msavi-arr.csv')
+        color_palettems = sns.color_palette("RdYlGn",as_cmap=True)
+
+        # Pass palette to plot and set axis ranges
+        sns.heatmap(colorms,
+                    cmap=color_palettems,
+                    center=0.5,
+                    vmin=0,
+                    vmax=1,
+                    yticklabels=False,
+                    xticklabels=False,
+                    cbar=False
+                )
+        plt.savefig("./tmp/msplot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
+        # plotvi= "./tmp/viplot/{}.jpg".format(a)
+        pathms.append("/msplot/{}.png".format(q))
+        a = a + 1
     if percent < 30:
         p1 = "Plantation less than 30% is not considered as optimal so kindly plant more trees."
     else:
