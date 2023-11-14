@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- bnhjcddgfdgfdnbbccccccccc
+dsssddvcjjjjjjjjjjjjjjjjj update-->
+<head>
+    <style>
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+        .thumb{
+            height: 100px;
+            border: 1px solid black;
+            margin: 10px 5px 0 0;
+        }
+        #flds.btn{
+            display: block;
+        }
+        #submitbtn{
+            visibility: hidden;
+        }
+        .thumb{
+            width: 100px;
+            height: 100px;
+            border-radius:15%;
+            margin-right: 10px;
+        }
+        /* #refreshButton {
+        position: absolute;
+        bottom: 50px;
+        left: 20px;
+        padding: 10px;
+        z-index: 400;
+} */
+div.mapbtns{
+        position: absolute;
+        bottom: 50px;
+        left: 20px;
+        padding: 10px;
+        z-index: 400;
+}
+
+        .content {
+            flex: 1;
+            position: relative;
+        }
+
+        @media (max-width: 767.98px) {
+            #map {
+                bottom: 20%;
+            }
+            .button{
+                margin-bottom: 10px;
+            }
+        }
+
+        .button {
+            font-size: 18px;
+            display: ruby-base;
+            text-align: right;
+            /* float: right; */
+            margin-top: 7px;
+            margin-right: 10px;
+            /* margin-left: 620px; */
+            /* margin-left: 580px; */
+            padding: 10px 50px 10px 50px;
+            background: black;
+            color: white;
+            font-weight: 100;
+            cursor: pointer;
+            font-size: 22px;
+            display: inline;
+            border-radius: 12px;
+            font-family: "Nunito", sans-serif;
+        }
+
+        .button:hover {
+            box-shadow:
+                0 2.8px 2.2px rgba(0, 0, 0, 0.034),
+                0 6.7px 5.3px rgba(0, 0, 0, 0.048),
+                0 12.5px 10px rgba(0, 0, 0, 0.06),
+                0 6.3px 17.9px rgba(0, 0, 0, 0.072),
+                0 1.8px 33.4px rgba(0, 0, 0, 0.06),
+                0 10px 80px rgba(0, 0, 0, 0.12);
+        }
+
+        /* .text {
+            margin-left: -10px;
+            font-size: 17px;
+            text-align: left;
+            font-family: Courier New, monospace;
+            color: rgb(22, 133, 19);
+            font-style: italic;
+            font-weight: 560;
+        } */
+
+        body {
+            flex-direction: column;
+            display: flex;
+            height: 100vh;
+        }
+        .butn{
+  position: relative;
+
+  line-height: 1.5;
+  border-radius: 3px;
+  color: #fff;
+  background-color: #ffffff;
+  border: 0;
+  transition: 0.2s;
+  overflow: hidden;
+  margin-top: 15px;
+  margin-left: 15px;
+  border: 1px solid black;
+}
+
+.butn input[type = "file"]{
+  cursor: pointer;
+  position: absolute;
+  left: 0%;
+  top: 0%;
+  transform: scale(3);
+ opacity: 0;
+}
+
+
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.0/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.0/leaflet.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" /> -->
+    <!-- <link rel="stylesheet" type="text/css" href="https://cdn-geoweb.s3.amazonaws.com/esri-leaflet-geocoder/0.0.1-beta.5/esri-leaflet-geocoder.css"> --> -->
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,700" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='assets/css/control.OSMGeocoder.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='assets/css/L.Control.Sidebar.css')}}">
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <!-- <script src="https://unpkg.com/leaflet"></script> -->
+    
+
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Map</title>
+</head>
+
+<body>
+    
+    <section class="content">
+        <div id="sidebar">
+            <h1>leaflet-sidebar</h1>
+        </div>
+        <div id='map'></div>
+        <div class="mapbtns">
+        <button id="refreshButton" class="btn" onclick="tog()">Show fields</button>
+        <div id="spn">
+            <button type = "button" class = "butn">
+                <i class="fa fa-upload" style="font-size:15px;color:rgb(0, 0, 0)"></i>
+                <input id="selectfile" type="file" accept=".kml" onchange="addKML()">
+                </button>
+            </div>
+        <div class=" col-lg-6 col-md-6 col-sm-6">
+            <form action="/result" entype="multipart/formdata" method="post">
+                <button class="button" id="dis" onclick="result()" disabled="disabled"><b>SUBMIT</b> </button>
+                <input type="hidden" name="selected_fid" id="selected_fid" value=""/>
+            </form> 
+            <a id="downloadAnchorElem" href="C:\Users\admin\PycharmProjects\greenproject\" style="display:none "></a>
+        </div>
+
+
+        
+    </section>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-plugins/3.3.0/layer/vector/KML.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.js"> </script>
+    <!-- <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script> -->
+    <script src="{{url_for('static', filename='assets/js/control.OSMGeocoder.js')}}"></script>
+    <script src="{{url_for('static', filename='assets/js/L.Control.Sidebar.js')}}"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-storage.js"></script>
+    <script type="text/javascript">
+        // sdfsdfupdate
+        const firebaseConfig = {
+        apiKey: "AIzaSyB0b84Akr5Ko5nKQNl_fFkMdE5PvWD-_z4",
+        authDomain: "instant-node-238517.firebaseapp.com",
+        databaseURL: "https://instant-node-238517.firebaseio.com",
+        projectId: "instant-node-238517",
+        storageBucket: "instant-node-238517.appspot.com",
+        messagingSenderId: "640571043309",
+        appId: "1:640571043309:web:738e5b8d85c4508cc68be4",
+        cors: [
+          {
+            "origin": ["https://instant-node-238517.appspot.com","https://instant-node-238517.ew.r.appspot.com"],
+            "method": ["GET"],
+            "responseHeader": ["Content-Type"],
+            "maxAgeSeconds": 3600
+          }
+        ]
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      const storage = firebase.storage();
+</script>      
+    <script>
+        var map = L.map('map').setView([24.8607, 67.0011], 14);
+        // Set up the OSM layer
+        googleHybrid = L.tileLayer('https://www.google.cn/maps/vt?lyrs=s@189&gl=cn&x={x}&y={y}&z={z}', {
+            maxZoom: 20,
+            subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+        }).addTo(map);
+        // map.createPane("snapshot-pane");
+        const snapshotOptions = {
+  hideElementsWithSelectors: [
+    ".leaflet-control-container"
+  ],
+  hidden: true
+};
+
+  
+    // Add takescreenshot function to button
+// const button = document.getElementById("snapshot-button");
+// button.addEventListener("click", takeScreenShot);
+
+
+        
+        var userid = "{{userid | safe}}";
+        userid = userid.toString();
+        var fieldsStr = {{fieldsStr|safe}};
+        //console.log(fieldsStr);
+
+        var fieldnames = {{fieldnames|safe}};
+        var newfield = {};
+        var newcentre = {};
+
+        var fieldids = {{fieldids|safe}};
+        
+
+        var centres = {{centres|safe}};
+        //console.log(centres);
+        //console.log(centres.length);
+        var polys = [];
+        function drawPolygon(coords,map) {
+            //var coords =  [[48,-3],[50,5],[44,11],[48,-3]] ;          
+
+            var a = JSON.parse(coords);
+            console.log(a);
+            let polygon=L.polygon(a, {color: 'red'})
+            polys.push(polygon.addTo(map));
+
+            map.fitBounds(polygon.getBounds());
+        }
+        for(var n=0;n<centres.length;n++){
+            drawPolygon(fieldsStr[n],map);
+            //console.log("done");
+        }
+        // function Point(lat, lng) {
+        //     this.lat = lat;
+        //     this.lng = lng;
+        // }
+        // var fields = [];
+        // for (var i = 0; i < fieldsStr.length; i++) {
+        //     var field = fieldsStr[i];
+        //     var points = [];
+        //     for (var j = 0; j < fieldsStr.length-1;j++)[
+        //         if (fieldsStr[j] == "["){
+
+        //         }
+        //         else
+        //     ]
+        
+
+        
+   
+//searchLayer is a L.LayerGroup contains searched markers
+//         var search = new GeoSearch.GeoSearchControl({
+//   provider: new GeoSearch.OpenStreetMapProvider(),
+// });
+// new L.Control.geocoder({position:'topleft'}).addTo(map);
+// map.addControl(search);
+        //  L.Control.geocoder({position:'topleft'}).addTo(map);
+        // Initialise the FeatureGroup to store editable layers
+        var drawnItems = new L.FeatureGroup();
+        map.addLayer(drawnItems);
+        // Initialise the draw control and pass it the FeatureGroup of editable layers
+        self =this;
+         self.drawControl = new L.Control.Draw({
+            draw:true,
+            edit: {
+                featureGroup: drawnItems
+            }
+        });
+        map.addControl(drawControl);
+        hide_draw_ctrls();
+        
+          //add leaflet search option with osm
+          var option = {
+          position: 'topright', // topright, topleft, bottomright, bottomleft
+          text: 'Search',
+          placeholder: 'Search...',
+        }
+
+        var sidebar = L.control.sidebar('sidebar', {
+        position: 'left'
+        });
+
+        map.addControl(sidebar);
+        setTimeout(function () {
+        sidebar.show();
+        }, 500);
+
+        function tog(){
+            sidebar.toggle();
+        }
+        
+        var deletefieldoption,editfieldnameoption,editfieldcoordsoption;
+        deletefieldoption=false;
+        editfieldnameoption=false;
+        editfieldcoordsoption=false;
+
+function fdeletefieldoption(){
+        deletefieldoption=true;
+        editfieldcoordsoption=false;
+        editfieldnameoption=false;
+    }
+function feditfieldnameoption(){
+        editfieldnameoption=true;
+        editfieldcoordsoption=false;
+        deletefieldoption=false;
+    }
+function feditfieldcoordsoption(){
+        editfieldcoordsoption=true;
+        editfieldnameoption=false;
+        deletefieldoption=false;
+    }
+
+        var list_str="";
+        var markers=[];
+        function refreshcentres(option){
+            let thumbs=[];
+            markers = [];
+            list_str="";
+    if (centres.length > 0){
+
+        if (markers){
+            markers.forEach((element, i)=>{ 
+                map.removeLayer(element);
+            })
+        }
+    centres.forEach((element, i)=>{ 
+    let thumbpath = storage.ref(userid+"/"+fieldids[i]+"/thumb.png");
+    console.log(userid+"/"+fieldids[i]+"/thumb.png");
+    URLI="";
+    thumbpath.getDownloadURL().then((url)=>{
+        console.log(url);
+        $("#thumb"+i).attr("src",url);
+        });
+        
+   markers[i] = L.marker([element.lat,element.lng]).addTo(map)
+   .bindPopup("<strong>"+fieldnames[i]+"</strong>");
+    list_str=list_str+"<div id='flds' class='btn' onclick='use("+i+")'><img class='thumb' id='thumb"+i+"' src='"+URLI+"'><a id='fid"+fieldids[i]+"' >"+fieldnames[i]+"</a></div>";
+    })}
+str_end= "<button onclick='addfield()'>Add field</button><button onclick='fdeletefieldoption()'>Delete field</button><button onclick='feditfieldnameoption()'>Edit field name</button>"
+input_str="<form id='fieldname' name='fieldname' method='POST'><input type='text' name='field_name' placeholder='Enter field name' value='newfield'></form>";
+if (option){
+    sidebar_str = list_str+input_str+str_end;
+}
+else{
+    sidebar_str = list_str+str_end;
+}
+sidebar.setContent(sidebar_str);
+}
+refreshcentres(0);
+
+        
+
+        function panToMarker(i) {
+    map.panTo(markers[i].getLatLng());
+    }
+
+
+        
+
+function deletefield(i){
+        let fieldid = fieldids[i];
+        fetch('/deletefield', {
+
+                    // Specify the method
+                    method: 'POST',
+
+                    // A JSON payload
+                    body: JSON.stringify({
+                        fieldid
+                    })
+                }).then(function (response) { // At this point, Flask has printed our JSON
+                    return response.text();
+                }).then(function (text) {
+
+                    //console.log('POST response: ');
+
+                    // Should be 'OK' if everything was successful
+                    //console.log(text);
+                });
+                fieldnames.splice(i,1);
+                fieldids.splice(i,1)
+                //console.log(fieldids);
+                centres.splice(i,1);
+                map.removeLayer(markers[i]);
+                markers.splice(i,1);
+                map.removeLayer(polys[i]);
+                polys.splice(i,1);
+                refreshcentres(0);
+    }
+
+function editfieldname(i){
+        let fieldid = fieldids[i];
+        $("#fid"+fieldid).replaceWith("<form id='fieldname' name='fieldname' method='POST'><input type='text' name='field_name' placeholder='Enter field name' value='"+fieldnames[i]+"'></form>");
+        $('#fieldname input').focus()
+            .blur(function() {
+                var $this = $(this);
+                let newname = $this.val();
+                fieldnames[i]=newname;
+                refreshcentres(0);
+
+                fetch('/editfieldname', {
+
+                    // Specify the method
+                    method: 'POST',
+
+                    // A JSON payload
+                    body: JSON.stringify({
+                        fieldid,
+                        newname
+                    })
+                }).then(function (response) { // At this point, Flask has printed our JSON
+                    return response.text();
+                }).then(function (text) {
+
+                    //console.log('POST response: ');
+
+                    // Should be 'OK' if everything was successful
+                    //console.log(text);
+                });
+            }); 
+    }
+
+function editfieldcoords(i){
+       let fieldid = fieldids[i];
+        map.removeLayer(polys[i]);
+
+
+        show_draw_ctrls();
+        sidebar.hide();
+        document.getElementById("dis").disabled = true;
+        document.getElementById("refreshButton").style.visibility = "hidden";
+        document.getElementById("selectfile").style.visibility = "hidden";
+        document.getElementById("spn").style.visibility = "hidden";
+
+        map.on('draw:created', function (e) {
+            var type = e.layerType,
+                layer = e.layer;
+            hide_draw_ctrls();
+            latlngs = layer.getLatLngs();
+            // console.log(latlngs);
+           
+            editedcentre = {"lat":latlngs[0].lat,"lng":latlngs[0].lng};
+            centres[i]=editedcentre;
+            refreshcentres(0);
+            
+            if (type === 'polygon' || type === 'rectangle') {
+                // structure the geojson object
+                var geojson = {};
+                geojson['type'] = 'Feature';
+                geojson['geometry'] = {};
+                geojson['geometry']['type'] = "Polygon";
+
+                // export the coordinates from the layer
+                coordinates = [];
+                
+                for (var i = 0; i < latlngs.length; i++) {
+                    coordinates.push([latlngs[i].lng, latlngs[i].lat])
+                }
+
+                // push the coordinates to the json geometry
+                geojson['geometry']['coordinates'] = [coordinates];
+
+                fetch('/editfieldcoords', {
+
+                    // Specify the method
+                    method: 'POST',
+
+                    // A JSON payload
+                    body: JSON.stringify({
+                        fieldid,
+                        geojson
+                    })
+                }).then(function (response) { // At this point, Flask has printed our JSON
+                    return response.text();
+                }).then(function (text) {
+
+                    //console.log('POST response: ');
+
+                    // Should be 'OK' if everything was successful
+                    //console.log(text);
+                });
+            }
+            else {
+                window.alert("Co-ordinates are not selected. \n Please select coordinates with the help of Rectangle or Polygon.");
+                document.getElementById("dis").disabled = true;
+            }
+
+            drawnItems.addLayer(layer);
+            sidebar.show();
+            });
+            document.getElementById("dis").disabled = false;
+            document.getElementById("refreshButton").style.visibility = "visible";
+            document.getElementById("selectfile").style.visibility = "visible";
+            document.getElementById("spn").style.visibility = "visible";
+            map.removeLayer(markers[i]);
+    }
+
+function addfield(){
+    show_draw_ctrls();
+    sidebar.hide();
+    document.getElementById("dis").disabled = true;
+    document.getElementById("refreshButton").style.visibility = "hidden";
+    document.getElementById("selectfile").style.visibility = "hidden";
+    document.getElementById("spn").style.visibility = "hidden";
+
+       
+        // map.on('draw:created', function (e) {
+        // var type = e.layerType,
+        // layer = e.layer;
+        // if (type === 'marker') {
+        // layer.bindPopup('A popup!');
+        // }
+        // drawnItems.addLayer(layer);
+        // });
+
+        map.on('draw:created', function (e) {
+            var type = e.layerType,
+                layer = e.layer;
+            drawnItems.addLayer(layer);
+            hide_draw_ctrls();
+            
+            refreshcentres(1);
+            sidebar.show();
+
+            
+            
+            $('#fieldname input').focus()
+            .blur(function() {
+                var $this = $(this);
+                var latlngs = layer.getLatLngs();
+                console.log(latlngs);
+                
+                newcentre = {"lat":latlngs[0].lat,"lng":latlngs[0].lng};
+                fieldnames.push($this.val());
+                centres.push(newcentre);
+                
+                // sidebar_str = list_str+str_end;
+                // sidebar.setContent(sidebar_str);
+
+
+                
+            
+            
+
+            if (type === 'polygon' || type === 'rectangle') {
+                // structure the geojson object
+                var geojson = {};
+                geojson['type'] = 'Feature';
+                geojson['geometry'] = {};
+                geojson['geometry']['type'] = "Polygon";
+
+                // export the coordinates from the layer
+                coordinates = [];
+                var corrcoords = [];
+                // console.log(e.poly.getLatLngs())
+                // console.log('latlngsin',latlngs[0].lat)
+                
+                layer.getLatLngs().forEach((element, i)=>{
+                    console.log(element)
+                    coordinates.push([element.lng, element.lat])
+                    corrcoords.push([element.lat,element.lng])
+                    console.log(corrcoords);
+                    console.log(coordinates);
+                })
+                // var corrcoords = layer.getLatLngs().map(function (point) {
+                //     return [point.lat, point.lng];
+                // });
+                map.removeLayer(layer);
+                drawPolygon(JSON.stringify(corrcoords),map);
+
+                // push the coordinates to the json geometry
+                geojson['geometry']['coordinates'] = layer.toGeoJSON().geometry.coordinates;
+            
+            
+            newfield['name']=$this.val();
+            newfield['geojson']=geojson;
+           
+
+            
+
+                fetch('/addfield', {
+
+                    // Specify the method
+                    method: 'POST',
+
+                    // A JSON payload
+                    body: JSON.stringify({
+                        newfield
+                    })
+                }).then(function (response) { // At this point, Flask has printed our JSON
+                    //console.log(response);
+                    return response.json();
+                }).then(function (json) {
+
+                    //console.log('POST response: ');
+                    
+                    //console.log(JSON.stringify(json));
+                    //console.log(json['id']);
+                    fieldids.push(json['id']);
+                    //console.log(fieldids);
+                    refreshcentres(0);
+                    // Should be 'OK' if everything was successful
+                    
+                });
+
+                // Finally, show the poly as a geojson object in the console
+                window.alert("Co-ordinates are saved\nPlease click Submit to proceed");
+                var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(geojson));
+                document.getElementById("dis").disabled = false;
+
+
+            
+
+            
+            }
+            else {
+                window.alert("Co-ordinates are not selected. \n Please select coordinates with the help of Rectangle or Polygon.");
+                document.getElementById("dis").disabled = true;
+            }
+
+           
+           
+
+
+        });
+        document.getElementById("dis").disabled = false;
+        document.getElementById("refreshButton").style.visibility = "visible";
+        document.getElementById("selectfile").style.visibility = "visible";
+        document.getElementById("spn").style.visibility = "visible";
+    });
+}
+
+
+
+function use(i){
+        if (deletefieldoption==true){
+            deletefield(i);
+        }
+        else if (editfieldnameoption==true){
+            editfieldname(i);
+        }
+        else if (editfieldcoordsoption==true){
+            editfieldcoords(i);
+        }
+        else{
+            panToMarker(i);
+            $('input[name="selected_fid"]').val(fieldids[i]);
+            document.getElementById("dis").disabled = false;
+        }}
+
+        
+        
+
+    refreshcentres(0);
+
+
+
+function show_draw_ctrls(){
+self.drawControl.addTo(map);
+}
+function hide_draw_ctrls(){
+self.drawControl.removeFrom(map);
+}
+
+var osmGeocoder = new L.Control.OSMGeocoder(option);
+map.addControl(osmGeocoder);
+
+
+
+
+
+
+        // map.addEventListener('mousedown', function (ev) {
+        //     start = ev.latlng;
+        // });
+        // map.addEventListener('mouseup', function (ev) {
+        //     end = ev.latlng;
+        //     window.alert("POINT 1: " + start.lat + " " + start.lng + " " + "POINT 2: " + end.lat + " " + end.lng + " ");
+        // });
+
+
+        // function copyStringToClipboard(str) {
+        //     // Create new element
+        //     var el = document.createElement('textarea');
+        //     // Set value (string to be copied)
+        //     el.value = str;
+        //     // Set non-editable to avoid focus and move outside of view
+        //     el.setAttribute('readonly', '');
+        //     el.style = { position: 'absolute', left: '-9999px' };
+        //     document.body.appendChild(el);
+        //     // Select text inside element
+        //     el.select();
+        //     // Copy text to clipboard
+        //     document.execCommand('copy');
+        //     // Remove temporary element
+        //     document.body.removeChild(el);
+        // }
+
+        // map.on("contextmenu", function (event) {
+        //     lats.push(event.latlng.lat);
+        //     longs.push(event.latlng.lng);
+        //     L.marker(event.latlng).addTo(map);
+        //     //window.alert("HAMAMED")
+        // });
+        // map.on("dblclick", function (event) {
+        //     var i;
+        //     var out = "";
+        //     for (i = 0; i < lats.length; i++) {
+        //         out = out + longs[i] + "," + lats[i] + "\n";
+        //     }
+        //     window.alert(out)
+
+        //     copyStringToClipboard(out);
+        // });
+
+
+        // document.getElementById("transitmap").addEventListener("contextmenu", function (event) {
+        //     // Prevent the browser's context menu from appearing
+        //     event.preventDefault();
+
+        //     // Add marker
+        //     // L.marker([lat, lng], ....).addTo(map);
+        //     alert(lat + ' - ' + lng);
+
+        //     return false; // To disable default popup.
+        // });
+
+
+    </script>
+    <!-- <div id="spn">
+        <button type = "button" class = "butn">
+            <i class="fa fa-upload" style="font-size:15px;color:rgb(0, 0, 0)"></i>
+            <input id="selectfile" type="file" accept=".kml" onchange="addKML()">
+            </button>
+        </div> -->
+    <!-- <div class=" d-flex justify-content-around">
+        <div class="text col-lg-6 col-md-6 col-sm-6">Select Co-ordinates with the help of toolbar of your favourite
+            place to analyze Green Area.
+            <br> Click Submit to continue.
+        </div> -->
+        <!-- <div class=" col-lg-6 col-md-6 col-sm-6">
+            <form action="/result" entype="multipart/formdata">
+                <button class="button" id="dis" onclick="result()" disabled="disabled"><b>SUBMIT</b> </button>
+            </form> 
+            <a id="downloadAnchorElem" href="C:\Users\admin\PycharmProjects\greenproject\" style="display:none "></a>
+        </div> -->
+    </div>
+
+    <script>
+        function addKML() {
+    var file = document.getElementById("selectfile").files[0];
+    if (file) {
+
+        var reader = new FileReader();
+        reader.onload = function () {
+
+            var kml = new L.KML(reader.result, {
+                async: true
+            });
+            kml.on("loaded", function (e) {
+                map.fitBounds(e.target.getBounds());
+            });
+            map.addLayer(kml);
+
+        }
+        reader.readAsDataURL(file);
+
+    }
+}
+    </script>
+</body>
+</html>

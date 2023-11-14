@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.71/jquery.csv-0.71.min.js"></script>
+</head>
+
+<body>
+    <script>
+        var point = ee.Geometry.Point([-122.292, 37.9018]);
+
+// Import the Landsat 8 TOA image collection.
+var l8 = ee.ImageCollection('LANDSAT/LC08/C01/T1_TOA');
+
+// Get the least cloudy image in 2015.
+var image = ee.Image(
+  l8.filterBounds(point)
+    .filterDate('2015-01-01', '2015-12-31')
+    .sort('CLOUD_COVER')
+    .first()
+);
+// Compute the Normalized Difference Vegetation Index (NDVI).
+var nir = image.select('B5');
+var red = image.select('B4');
+var ndvi = nir.subtract(red).divide(nir.add(red)).rename('NDVI');
+
+// Display the result.
+Map.centerObject(image, 9);
+var ndviParams = {min: -1, max: 1, palette: ['blue', 'white', 'green']};
+Map.addLayer(ndvi, ndviParams, 'NDVI image');
+var ndvi = image.normalizedDifference(['B5', 'B4']).rename('NDVI');
+    </script>
+    <script>
+        // Load Sentinel-2 TOA reflectence dat.
+        var geometry = ee.Geometry.Point([[67.00390934944153, 24.845159743480252], [67.00390934944153, 24.84522789438138], [67.00402736663818, 24.84522789438138], [67.00402736663818, 24.845159743480252]]);
+        var image = ee.ImageCollection('COPERNICUS/S2')
+            .filterDate('2021-05-01', '2021-05-29')
+            //Prefi;ter to get less cloudy granules.
+            .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 10))
+            .filterBounds(geometry)
+            .median()
+
+        var rgbVis = {
+            min: -1,
+            max: +1,
+            bands: ['B8A', 'B11'],
+        };
+
+        Map.addLayer(image.clip(geometry), rgbVis, 'image');
+
+        //NDVI='float(nir - red)/float(nir + red)'
+
+        var ndvi = image.expression('(nir - SWIR)/(nir + SWIR)', {
+            'nir': image.select('B8'),
+            'SWIR': image.select('B11'),
+        }).rename('NDMI')
+
+        var final_image = image.addBands(ndvi)
+
+        Map.addLayer(final_image.clip(geometry), rgbVis, 'newimage')
+
+
+    </script>
+</body>
+
+</html>

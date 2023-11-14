@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+      <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <title>Document</title>
+    <style>
+        body{
+            width: 100%;
+            /* overflow : hidden */
+        }
+          .logo {
+            height: 65px;
+            top: 0px;
+            position: absolute;
+        }
+
+        .nav>li>a {
+            font-size: 18px;
+            margin-top: 15px;
+            font-family: "Nunito", sans-serif;
+        }
+
+        .navbar-default .navbar-nav>li>a {
+            color: #12871b;
+        }
+
+        .imgvi {
+            margin-top: 60px;
+            /* margin-left: 20px; */
+            height: 500px;
+            width:  500px;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            -webkit-transition: margin-top 0.7s;
+            transition: margin-top 0.6s;
+            transition-timing-function: ease-out;
+            -webkit-transition-timing-function: ease-out;
+            -moz-transition: margin-top 0.6s;
+            -moz-transition-timing-function: ease-out;
+        }
+
+        .imgmi {
+            margin-top: 60px;
+            /* margin-right: 20px; */
+            height:  500px;
+            width:  500px;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            -webkit-transition: margin-top 0.7s;
+            transition: margin-top 0.6s;
+            transition-timing-function: ease-out;
+            -webkit-transition-timing-function: ease-out;
+            -moz-transition: margin-top 0.6s;
+            -moz-transition-timing-function: ease-out;
+        }
+
+
+        label {
+            display: block;
+            font: 1rem 'Fira Sans', sans-serif;
+        }
+
+        input,
+        label {
+            margin: .4rem 0;
+        }
+
+
+        .img1 {
+            top: 0;
+            right: 2px;
+            margin-right: -60px;
+            margin-top: -30px;
+            position: absolute;
+            height: 70px;
+        }
+
+        .btn {
+       background-color: #3c9c19;
+       color: white;
+       padding: 16px;
+       font-size: 16px;
+       border: none;
+     }
+     
+     .dropdown {
+       position: relative;
+       display: inline-block;
+     }
+     
+     .dropdown-menu {
+       display: none;
+       position: absolute;
+       background-color: #f1f1f1;
+       min-width: 170px;
+       box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+       z-index: 1;
+     }
+     
+     .dropdown-menu a {
+       color: black;
+       padding: 2px 10px;
+       text-decoration: none;
+       display: block;
+     }
+     
+     .dropdown-menu a:hover {background-color: #ddd;}
+     
+     .dropdown:hover .dropdown-menu {display: block;}
+     
+     .dropdown:hover .btn {color:#f1f1f1;} 
+     .btn:hover {
+                 box-shadow:
+                     0 2.8px 2.2px rgba(0, 0, 0, 0.034),
+                     0 6.7px 5.3px rgba(0, 0, 0, 0.048),
+                     0 12.5px 10px rgba(0, 0, 0, 0.06),
+                     0 6.3px 17.9px rgba(0, 0, 0, 0.072),
+                     0 1.8px 33.4px rgba(0, 0, 0, 0.06),
+                     0 10px 80px rgba(0, 0, 0, 0.12);
+             }
+        
+#second  {
+  display: none
+}
+
+
+             /* .btn-primary.active, .btn-primary:active, .open>.dropdown-toggle.btn-primary {
+         color: #fff;
+         background-color: #286090;
+         background-image: none;
+         border-color: #204d74;
+     }
+     .btn-primary.active.focus, .btn-primary.active:focus, .btn-primary.active:hover, .btn-primary:active.focus, .btn-primary:active:focus, .btn-primary:active:hover, .open>.dropdown-toggle.btn-primary.focus, .open>.dropdown-toggle.btn-primary:focus, .open>.dropdown-toggle.btn-primary:hover {
+         color: #fff;
+         background-color: #204d74;
+         border-color: #122b40;
+     } */
+     </style>
+</head>
+<body>
+    <div class="row align-items-center">
+        <div class="col d-flex justify-content-center">
+          
+        </div>
+        <div class="col-6 d-flex justify-content-center" >
+            <img style="display:none; position: fixed; width:100%; height:100vh; z-index: 1; overflow: visible;
+            right: 0px; left: 0px; top: 0px; right: 0px; opacity: 90%;" id="bigpic" src="bigpic" />
+            <div id="first"><img  class="imgvi" src="{{ plotvi }}"/>    <div id="coord1"></div>
+            <div id="my1"></div></div>
+         
+         
+            <div  id="second"><img class="imgmi" src="{{ plotmi }}"/>    <div id="coord2"></div>
+            <div id="my2"></div></div>
+          
+         
+           
+      
+        </div>
+        <div class="col d-flex justify-content-center">
+          
+        </div>
+      </div>
+    <div class="row align-items-center">
+        <div class="col d-flex justify-content-center">
+          
+        </div>
+        <div class="col d-flex justify-content-center" >
+                <div class="dropdown">
+                    <button class="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Natural Color
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                      <a class="dropdown-item" >Vegetation Indices</a>
+                      <a class="dropdown-item btnsvi" onClick="my1()">NDVI</a>
+                      <div class="dropdown-divider"></div> 
+                      <a class="dropdown-item" >Moisture Indices</a>
+                      <a class="dropdown-item btnsmi" onClick="my2()">NDMI</a>
+                    </div>
+                  </div>
+        </div>
+        <div class="col d-flex justify-content-center">
+          
+        </div>
+      </div>
+      <div class="row align-items-center">
+        <div class="col d-flex justify-content-center">
+          
+        </div>
+        <div class="col-6 d-flex justify-content-center" >
+            
+            <div id="chart" style="width:100%;height:360px;"></div>
+      
+        </div>
+        <div class="col d-flex justify-content-center">
+          
+        </div>
+      </div>
+      <script>
+            function f1() {
+            var sourceOfPicture = "https://freefrontend.com/assets/img/css-progress-bars/Loading-Bar.gif";
+            var img = document.getElementById('bigpic')
+            img.src = sourceOfPicture.replace('90x90', '225x225');
+            img.style.display = "block";
+        }
+        function myFunction() {
+            var x = document.getElementById("start").value;
+            document.getElementById("demo").innerHTML = x;
+        }
+      </script>
+       <script>
+        $(document).ready(function () {
+            $('.imgvi').click(function (e) {
+                var offset = $(this).offset();
+                var X = (e.pageX - offset.left);
+                var Y = (e.pageY - offset.top);
+                var row = "{{nrowsvi}}" - 1;
+                var col = "{{ncolsvi}}" - 1;
+                var total = 500;
+                let resultX = Math.round((parseInt(X) / parseInt(total)) * parseInt(col));
+                let resultY = Math.round((parseInt(Y) / parseInt(total)) * parseInt(row));
+                var ndvi = JSON.parse("{{ ndvi }}");
+                $('#coord1').text('X: ' + X + ', Y: ' + Y + ", resultY: " + resultY + ', resultX :' + resultX);
+                $('#my1').text(' ndvi: ' + ndvi[resultY][resultX]);
+            });
+        });
+    </script>
+    </script>
+    <!-- <script type="text/javascript">
+        myvar = '{{dic}}';
+        document.write(myvar);
+ 
+    </script> -->
+    <script>
+        $(document).ready(function () {
+            $('.imgmi').click(function (e) {
+                var offset = $(this).offset();
+                var X = (e.pageX - offset.left);
+                var Y = (e.pageY - offset.top);
+                var row = "{{nrowsmi}}" - 1;
+                var col = "{{ncolsmi}}" - 1;
+                var total = 500;
+                // var ndvi = JSON.parse('{{ ndvis | safe }}');
+                // var ndvi = ndvi[0][0];
+
+
+                let resultX = Math.round((parseInt(X) / parseInt(total)) * parseInt(col));
+                let resultY = Math.round((parseInt(Y) / parseInt(total)) * parseInt(row));
+                var ndvi = JSON.parse("{{ ndmi }}");
+                // $('#coord').text('X: ' + X + ', Y: ' + Y +  ', col: ' + col + ', resultX: ' + resultX + ', resultY: ' + resultY + ', ndvi' + ndvi);
+                $('#coord2').text('X: ' + X + ', Y: ' + Y + ", resultY: " + resultY + ', resultX :' + resultX);
+                $('#my2').text(' ndvi: ' + ndvi[resultY][resultX]);
+            });
+        });
+    </script>
+      <script>
+        $(document).ready(function(){
+            $(".btnsvi").click(function() {
+    
+              
+                     google.charts.load("current", {packages:["corechart"]});
+      google.charts.setOnLoadCallback(drawChart);
+      function drawChart() {
+      
+        var data = google.visualization.arrayToDataTable({{ dicvi | safe }}
+        );
+
+        var options = {
+          title: 'NDVI',
+          pointsVisible: true,
+          chartArea: {
+      backgroundColor: {
+        fill: '#111418',
+        fillOpacity: 0.7,
+        right:10, // !!! works !!!
+    bottom:20, 
+        
+      },
+    },
+    backgroundColor: {
+        fill: '#f1f1f1',
+      fillOpacity: 0
+    },
+    
+          vAxis: {
+            gridlines: {color: '#939393'},
+            minValue: -1,
+            maxValue:1,
+            textStyle: {color: '#6a7179'}, showColorCode: true,
+            
+          
+          },
+          hAxis: {
+            gridlines: {color: '#939393'},
+            textStyle: {color: '#575a5e'}, showColorCode: true,
+            
+          
+          }
+       };
+
+        var chart = new google.visualization.LineChart(document.getElementById('chart'));
+        chart.draw(data, options);
+      };  });
+        });
+
+    </script>
+    <script>
+       const my1 = () => {
+  document.getElementById("first").style.display ='block';
+  document.getElementById("second").style.display ='none'
+
+}
+
+const my2 = () => {
+  document.getElementById("second").style.display ='block'
+  document.getElementById("first").style.display ='none'
+
+}
+
+
+    </script>
+       <script type="text/javascript">
+         $(document).ready(function(){
+            $(".btnsmi").click(function() {
+           
+        google.charts.load("current", {packages:["corechart"]});
+        google.charts.setOnLoadCallback(drawChart);
+        function drawChart() {
+        
+          var data = google.visualization.arrayToDataTable({{dicmi | safe }}
+          );
+  
+          var options = {
+            title: 'NDMI',
+            pointsVisible: true,
+            chartArea: {
+        backgroundColor: {
+          fill: '#111418',
+          fillOpacity: 0.7,
+          right:10, // !!! works !!!
+      bottom:20, 
+          
+        },
+      },
+      backgroundColor: {
+          fill: '#f1f1f1',
+        fillOpacity: 0
+      },
+      
+            vAxis: {
+              gridlines: {color: '#939393'},
+              minValue: -1,
+              maxValue:1,
+              textStyle: {color: '#6a7179'}, showColorCode: true,
+              
+            
+            },
+            hAxis: {
+              gridlines: {color: '#939393'},
+              textStyle: {color: '#575a5e'}, showColorCode: true,
+              
+            
+            }
+         };
+  
+          var chart = new google.visualization.LineChart(document.getElementById('chart'));
+          chart.draw(data, options);
+        }
+    });
+        });
+      </script>
+      <!-- <script>
+         
+      </script> -->
+                
+      
+
+</body>
+</html>

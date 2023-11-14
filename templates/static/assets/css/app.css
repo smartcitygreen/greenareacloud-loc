@@ -1,0 +1,91 @@
+html, body, #container {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+  }
+  #map {
+    width: auto;
+    height: 100%;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  }
+  
+  .info {
+    padding: 6px 8px;
+    font: 12px/14px Arial, Helvetica, sans-serif;
+    color: white;
+    background: rgba(52,58,64,0.8);
+    box-shadow: 0 0 15px rgba(255,255,255,0.2);
+    border-radius: 5px;
+    text-align: left;
+  }
+  
+  /* #exportBtn {
+    color: #ffffff;
+    font-weight: bold;
+  } */
+  /* #map {
+    position: absolute;
+    top: 0;
+    bottom: 10%;
+    left: 0;
+    right: 0;
+  } */
+  
+  .content {
+    flex: 1;
+  }
+  
+  @media (max-width: 767.98px) {
+    #map {
+        bottom: 20%;
+    }
+    .button{
+        margin-bottom: 10px;
+    }
+  }
+  
+  .button {
+    font-size: 18px;
+    display: block;
+    text-align: right;
+    /* float: right; */
+    margin-top: 7px;
+    margin-right: 10px;
+    /* margin-left: 620px; */
+    /* margin-left: 580px; */
+    padding: 10px 50px 10px 50px;
+    background: #3c9c19;
+    color: white;
+    font-weight: 100;
+    cursor: pointer;
+    font-size: 22px;
+    display: inline-block;
+    border-radius: 30px;
+    font-family: "Nunito", sans-serif;
+  }
+  
+  .button:hover {
+    box-shadow:
+        0 2.8px 2.2px rgba(0, 0, 0, 0.034),
+        0 6.7px 5.3px rgba(0, 0, 0, 0.048),
+        0 12.5px 10px rgba(0, 0, 0, 0.06),
+        0 6.3px 17.9px rgba(0, 0, 0, 0.072),
+        0 1.8px 33.4px rgba(0, 0, 0, 0.06),
+        0 10px 80px rgba(0, 0, 0, 0.12);
+  }
+  
+  .text {
+    margin-left: -10px;
+    font-size: 17px;
+    text-align: left;
+    font-family: Courier New, monospace;
+    color: rgb(22, 133, 19);
+    font-style: italic;
+    font-weight: 560;
+  }
+  
+  body {
+    flex-direction: column;
+    display: flex;
+    height: 100vh;
+  }

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel = "stylesheet" href = "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"/>
+    <script src = "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+    <title>Document</title>
+</head>
+   <body>
+      <div id = "map" style = "width:900px; height:580px"></div>
+      <script>
+         var map = L.map('map').setView([24.8607, 67.0011], 14);
+         googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
+          maxZoom: 20,
+          subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+      }).addTo(map);
+    var imageUrl = './static/viplot/3.jpg',
+    imageBounds =[[25.14780487437314,67.21414089202881], [25.14779516247423,67.21602380275726], [ 25.14745524552536,67.21591114997862], [ 25.147163887387137,67.21563756465912], [25.146848248619193,67.21550345420837], [25.14624124869427,67.21510112285614], [25.14617326451472,67.21382975578308]];
+
+L.imageOverlay(imageUrl, imageBounds).addTo(map);
+
+map.setMaxBounds(imageBounds);
+      </script>
+   </body>
+</html>

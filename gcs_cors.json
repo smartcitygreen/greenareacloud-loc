@@ -1,0 +1,8 @@
+[
+  {
+    "origin": ["https://instant-node-238517.appspot.com","https://instant-node-238517.ew.r.appspot.com"],
+    "responseHeader": ["Content-Type"],
+    "method": ["GET", "HEAD", "POST"],
+    "maxAgeSeconds": 120
+  }
+]

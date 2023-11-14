@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+</head>
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/css/bootstrap.min.css"> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> -->
+
+<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="new.css">
+<body>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+    <!-- Section: Design Block -->
+    <style>
+   
+  body {
+    /* margin: 0; */
+    /* font-family: var(--bs-font-sans-serif); */
+    /* font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5; */
+    /* color: #212529; */
+    background-color: #181F26;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+}
+  .cover {
+    width: 400px;
+    margin: auto;
+}
+.mastfoot {
+    padding-top: 0px;
+    text-align: center;
+    margin: auto;
+}
+.panel-body {
+    padding: 15px;
+    background-color: #212930;
+}
+.nav>li{
+   
+    width:50%;
+}
+.panel-default {
+    /* border-color:none; */
+    background-color: #212930;
+    border-color:#323D49;
+}
+.nav>li>a {
+    position: relative;
+    display: block;
+    padding: 10px 74px 10px 74px;
+    color: #9FB4C7;
+    margin:0px;
+    background-color: #212930;
+   
+}
+.nav-tabs{
+    border:  1px solid #323D49;
+}
+.nav-tabs:hover{
+       background-color: #010203;
+}
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:hover, .nav-tabs>li.active>a:focus {
+    color: #fdfbfb;
+    background-color: #010203;
+    border: 1px solid #323D49;
+    /* border-top: none; */
+    /* border-bottom-color: transparent; */
+    /* border: none; */
+    cursor: default;
+}
+.control-label{
+    color: #9FB4C7;
+    font-size: 12px;
+    float:left;
+}
+.nav-tabs>li {
+    float: left;
+    margin-bottom: -1px;
+    margin-top: -1px;
+    margin-left: -1px;
+    margin-right:1px;
+   
+}
+label {
+    display: inline-block;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+  .rounded-t-5 {
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+      }
+  
+      @media (min-width: 992px) {
+        .rounded-tr-lg-0 {
+          border-top-right-radius: 0;
+        }
+  
+        .rounded-bl-lg-5 {
+          border-bottom-left-radius: 0.5rem;
+        }
+      }
+      @media screen and (max-width: 250px) {
+   
+    .vl {
+      display: none;
+    }}
+  .card{
+  
+  width: 500px;
+  border:none;
+  
+  }
+  
+  
+  
+  
+  .btr{
+  
+  border-top-right-radius: 5px !important;
+  }
+  
+  
+  .btl{
+  
+  border-top-left-radius: 5px !important;
+  }
+  
+  .btn-dark {
+    color: #fff;
+    background-color: #3c9c19;
+    border-color: #3c9c19;
+}
+  
+  
+  .btn-dark:hover {
+    color: #fff;
+    background-color: #3c9c19;
+    border-color: #3c9c19;
+  }
+  
+  
+  .nav-pills{
+  
+  display:table !important;
+  width:100%;
+  }
+  
+  .nav-pills .nav-link {
+    border-radius: 0px;
+        border-bottom: 1px solid #0d6efd40;
+  
+  }
+  
+  .nav-item{
+      display: table-cell;
+       background: #0d6efd2e;
+  }
+  
+  
+  .form{
+  
+  padding: 10px;
+      height: 300px;
+  }
+  
+  .form input{
+  
+  margin-bottom: 12px;
+  border-radius: 3px;
+  }
+  
+  
+  .form input:focus{
+  
+  box-shadow: none;
+  }
+  
+  
+  .form button{
+  
+  margin-top: 20px;
+  }
+  .vl {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%);
+    border: 1px solid #323D49;
+    /* height: 175px; */
+    width:330px;
+    margin-top: 0px;
+  }
+  
+  .vl-innertext {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    /* background-color: #79c64c; */
+    color:#ddd;
+    /* border: 1px solid #ccc;
+    border-radius: 50%; */
+    padding: 5px 10px;
+    font-size: 9px;
+  }
+  
+      </style>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<section class=" text-center text-lg-start">
+   
+    <!-- <div class="card mb-3"> -->
+      <div class="row d-flex align-items-center">
+        <div class="col-lg-6 d-lg-flex">
+          <img src="https://mdbootstrap.com/img/new/ecommerce/vertical/004.jpg" alt="Trendy Pants and Shoes"
+            class="w-100 rounded-t-5 rounded-tr-lg-0 rounded-bl-lg-5" style="height: 100vh;width:100%"/>
+        </div>
+        <div class="col-lg-6">
+          <div class="card-body py-5 px-md-5">
+  
+            <div class="d-flex justify-content-center align-items-center mt-1">
+
+
+                <div class="card">
+                     
+<ul id="dTab" class="nav nav-tabs">
+  <li class="active"><a href="#pane1" data-toggle="tab">Register</a></li>
+  <li><a href="#pane2" style="" data-toggle="tab">Login</a></li>
+  <!--<li><a href="#pane3" data-toggle="tab"></a></li>-->
+</ul>
+
+<div class="panel-body">
+
+<div class="tab-content">
+ 
+  <div id="pane1" class="tab-pane fade in active">
+      <!-- Register Username -->
+      <button class="btn btn-dark btn-block mt-3 mb-5"> <a href="#" class="google btn" onclick="google_login()">
+          <i class="fa fa-google fa-fw">
+        </i> Login with Google
+      </a></button>
+      <div class="vl">
+          <span class="vl-innertext"><b>OR</b></span>
+        </div>
+      <form action="" method="POST" style="margin-top:50px ;">
+       
+          <fieldset>
+              <div class="form-group">
+                  <label class="control-label" for="username">Username</label>
+                  <input type="text" id="username" name="username" placeholder="Username can contain any letters or numbers" class="form-control" />
+              </div>
+              <div class="form-group">
+                  <!-- E-mail -->
+                  <label class="control-label" for="email">E-mail</label>
+                  <input type="text" id="email" name="email" placeholder="Please provide your E-mail" class="form-control" />
+              </div>
+              <div class="form-group">
+                  <!-- Password-->
+                  <label class="control-label" for="password">Password</label>
+                  <input type="password" id="password" name="password" placeholder="Password should be at least 4 characters" class="form-control" />
+              </div>
+              <!-- <div class="form-group">
+                
+                  <label class="control-label" for="password_confirm">Password (Confirm)</label>
+                  <input type="password" id="password_confirm" name="password_confirm" placeholder="Please confirm password" class="form-control" />
+              </div> -->
+              <!--    <div class="form-group">
+<select class="form-control">
+<option>select</option>
+<option>2</option>
+<option>3</option>
+<option>4</option>
+<option>5</option>
+</select>
+</div>-->
+
+              <!-- <div class="form-group">
+<label for="exampleInputFile">File Upload</label>
+<input type="file" id="exampleInputFile">
+<p class="help-block">upto 500KB</p>
+</div>-->
+              <button class="btn btn-dark btn-block mb-5">Register</button>
+          </fieldset>
+      </form>
+  </div>
+  <div id="pane2" class="tab-pane fade">
+      <!-- login -->
+      <form role="form" action="" method="POST">
+          <div class="form-group">
+              <label class="control-label" for="exampleInputEmail1">Email address</label>
+              <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email" />
+          </div>
+          <div class="form-group">
+              <label class="control-label" for="exampleInputPassword1">Password</label>
+              <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" />
+          </div>
+          <button type="submit" class="btn btn-success">Submit</button>
+
+          <button type="reset" class="btn btn-success" id="forgetBtn">Forget Password</button>
+      </form>
+      <!-- login-ends-->
+  </div>
+  <div id="pane3" class="tab-pane fade">
+      <!-- password forget -->
+      <form role="form" action="" method="POST">
+          <div class="form-group">
+              <label class="control-label" for="exampleInputEmail1">Email address</label>
+              <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Request a password reset. Enter your email" />
+          </div>
+
+          <button type="submit" class="btn btn-success">Reset Password</button>
+          <button type="reset" class="btn btn-success" id="loginBtn">Login</button>
+      </form>
+      <!-- password forget -->
+  </div>
+</div>
+<!-- -->
+</div>
+                        </div>
+                    
+                    </div>
+
+                
+                </div>
+        
+              </div>
+  </div>
+         
+  </section>
+
+
+  
+  <!-- Section: Design Block -->
+</body>
+</html>

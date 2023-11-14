@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="author" content="unsorry">
+  <meta name="description" content="leaflet draw export to geojson file">
+
+  <title>GIS front 2</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+</head>
+<body>
+<div id="container">
+    <div id="map"></div>
+  </div>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.js"> </script>
+  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <style>
+html, body, #container {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+body{
+      font-size: 14px;
+    font-family: Helvetica, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    font-weight: 400;
+    line-height: 1;
+
+   }
+#map {
+  width: auto;
+  height: 100%;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+.info {
+  padding: 6px 8px;
+  font: 12px/14px Arial, Helvetica, sans-serif;
+  color: white;
+  background: rgba(52,58,64,0.8);
+  box-shadow: 0 0 15px rgba(255,255,255,0.2);
+  border-radius: 5px;
+  text-align: left;
+}
+
+/* #exportBtn {
+  color: #ffffff;
+  font-weight: bold;
+} */
+/* #map {
+  position: absolute;
+  top: 0;
+  bottom: 10%;
+  left: 0;
+  right: 0;
+} */
+
+.content {
+  flex: 1;
+}
+
+@media (max-width: 767.98px) {
+  #map {
+      bottom: 20%;
+  }
+  .button{
+      margin-bottom: 10px;
+  }
+}
+
+.button {
+  font-size: 18px;
+  display: block;
+  text-align: right;
+  /* float: right; */
+  margin-top: 7px;
+  margin-right: 10px;
+  /* margin-left: 620px; */
+  /* margin-left: 580px; */
+  padding: 10px 50px 10px 50px;
+  background: #3c9c19;
+  color: white;
+  font-weight: 100;
+  cursor: pointer;
+  font-size: 22px;
+  display: inline-block;
+  border-radius: 30px;
+  font-family: "Nunito", sans-serif;
+}
+
+.button:hover {
+  box-shadow:
+      0 2.8px 2.2px rgba(0, 0, 0, 0.034),
+      0 6.7px 5.3px rgba(0, 0, 0, 0.048),
+      0 12.5px 10px rgba(0, 0, 0, 0.06),
+      0 6.3px 17.9px rgba(0, 0, 0, 0.072),
+      0 1.8px 33.4px rgba(0, 0, 0, 0.06),
+      0 10px 80px rgba(0, 0, 0, 0.12);
+}
+
+.text {
+  margin-left: -10px;
+  font-size: 17px;
+  text-align: left;
+  font-family: Courier New, monospace;
+  color: rgb(22, 133, 19);
+  font-style: italic;
+  font-weight: 560;
+}
+
+body {
+  flex-direction: column;
+  display: flex;
+  height: 100vh;
+}
+
+  </style>
+<script>
+    var map = L.map('map').setView([24.8607, 67.0011], 14);
+        // Set up the OSM layer
+        googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
+            maxZoom: 20,
+            subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+        }).addTo(map);
+
+//search bar
+L.Control.geocoder({position:'topleft'}).addTo(map);
+
+var drawnItems = new L.FeatureGroup();
+        map.addLayer(drawnItems);
+        // Initialise the draw control and pass it the FeatureGroup of editable layers
+        var drawControl = new L.Control.Draw({
+            edit: {
+                featureGroup: drawnItems
+            }
+        });
+        map.addControl(drawControl);
+        // map.on('draw:created', function (e) {
+        // var type = e.layerType,
+        // layer = e.layer;
+        // if (type === 'marker') {
+        // layer.bindPopup('A popup!');
+        // }
+        // drawnItems.addLayer(layer);
+        // });
+
+        map.on('draw:created', function (e) {
+            var type = e.layerType,
+                layer = e.layer;
+
+            if (type === 'polygon' || type === 'rectangle') {
+                // structure the geojson object
+                var geojson = {};
+                geojson['type'] = 'Feature';
+                geojson['geometry'] = {};
+                geojson['geometry']['type'] = "Polygon";
+
+                // export the coordinates from the layer
+                coordinates = [];
+                latlngs = layer.getLatLngs();
+                for (var i = 0; i < latlngs.length; i++) {
+                    coordinates.push([latlngs[i].lng, latlngs[i].lat])
+                }
+
+                // push the coordinates to the json geometry
+                geojson['geometry']['coordinates'] = [coordinates];
+                fetch('/result', {
+
+                    // Specify the method
+                    method: 'POST',
+
+                    // A JSON payload
+                    body: JSON.stringify({
+                        geojson
+                    })
+                }).then(function (response) { // At this point, Flask has printed our JSON
+                    return response.text();
+                }).then(function (text) {
+
+                    console.log('POST response: ');
+
+                    // Should be 'OK' if everything was successful
+                    console.log(text);
+                });
+
+                // Finally, show the poly as a geojson object in the console
+                window.alert("Co-ordinates are saved\nPlease click Submit to proceed");
+                var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(geojson));
+                document.getElementById("dis").disabled = false;
+
+
+            }
+
+            else {
+                window.alert("Co-ordinates are not selected. \n Please select coordinates with the help of Rectangle or Polygon.");
+                document.getElementById("dis").disabled = true;
+            }
+
+            drawnItems.addLayer(layer);
+
+
+        });
+     
+  </script>
+  <div class=" d-flex justify-content-around">
+    <div class="text col-lg-6 col-md-6 col-sm-6">Select Co-ordinates with the help of toolbar of your favourite
+        place to analyze Green Area.
+        <br> Click Submit to continue.
+    </div>
+    <div class=" col-lg-6 col-md-6 col-sm-6">
+        <form action="/result" entype="multipart/formdata">
+            <button class="button" id="dis" onclick="result()" disabled="disabled">Submit</button>
+        </form>
+        <a id="downloadAnchorElem" href="C:\Users\admin\PycharmProjects\greenproject\" style="display:none "></a>
+    </div>
+</div>
+
+  
+</body>
+
+</body>

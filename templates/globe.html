@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>WebGL Globe Example</title>
+    <style>
+      /* CSS to make the canvas fill the left column */
+      #left-column {
+        width: 75%;
+        float: left;
+      }
+      /* CSS to center the button in the right column */
+      #right-column {
+        width: 25%;
+        float: right;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      button {
+        font-size: 24px;
+        padding: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="left-column">
+      <canvas id="globe"></canvas>
+    </div>
+    <div id="right-column">
+      <button id="get-started">Get Started</button>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+      // WebGL code to display a 3D globe
+      const canvas = document.getElementById("globe");
+      const renderer = new THREE.WebGLRenderer({ canvas });
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, canvas.width / canvas.height, 0.1, 1000);
+      camera.position.z = 5;
+      const geometry = new THREE.SphereGeometry(2, 32, 32);
+      const textureLoader = new THREE.TextureLoader();
+      const texture = textureLoader.load("https://threejs.org/examples/textures/land_ocean_ice_cloud_2048.jpg");
+      const material = new THREE.MeshBasicMaterial({ map: texture });
+      const globe = new THREE.Mesh(geometry, material);
+      scene.add(globe);
+      function animate() {
+        requestAnimationFrame(animate);
+        globe.rotation.y += 0.01;
+        renderer.render(scene, camera);
+      }
+      animate();
+    </script>
+  </body>
+</html>

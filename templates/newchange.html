@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="author" content="unsorry">
+  <meta name="description" content="leaflet draw export to geojson file">
+
+  
+
+  <title>GIS front 2</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"/>
+  <link rel="stylesheet" href="assets/css/leaflet-measure.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+  <link rel="stylesheet" href="assets/css/app.css">
+  
+
+</head>
+<body>
+  <div id="container">
+    <div id="map"></div>
+  </div>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+  <script src="assets/js/leaflet-measure.js"></script>
+  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+<script src="static\js\app12.js"></script>
+
+
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <style>
+    body{
+      font-size: 14px;
+    font-family: Helvetica, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    font-weight: 400;
+    line-height: 1;
+
+   }
+  
+  </style>
+  <div class=" d-flex justify-content-around">
+    <div class="text col-lg-6 col-md-6 col-sm-6">Select Co-ordinates with the help of toolbar of your favourite
+        place to analyze Green Area.
+        <br> Click Submit to continue.
+    </div>
+    <div class=" col-lg-6 col-md-6 col-sm-6">
+        <form action="/result" entype="multipart/formdata">
+            <button class="button" id="dis" onclick="result()" disabled="disabled">Submit</button>
+        </form>
+        <a id="downloadAnchorElem" href="C:\Users\admin\PycharmProjects\greenproject\" style="display:none "></a>
+    </div>
+</div>
+
+  
+</body>
+</html>

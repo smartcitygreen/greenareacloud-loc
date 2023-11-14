@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>leaflet maps mini project</title>
+    <style>
+              #map {
+            position: absolute;
+            top: 0;
+            bottom: 10%;
+            left: 0;
+            right: 0;
+        }
+
+        .content {
+            flex: 1;
+        }
+
+        @media (max-width: 767.98px) {
+            #map {
+                bottom: 20%;
+            }
+            .button{
+                margin-bottom: 10px;
+            }
+        }
+
+        .button {
+            font-size: 18px;
+            display: block;
+            text-align: right;
+            float: right;
+            margin-top: 7px;
+            margin-right: 10px;
+            /* margin-left: 620px; */
+            /* margin-left: 580px; */
+            padding: 10px 50px 10px 50px;
+            background: #3c9c19;
+            color: white;
+            font-weight: 100;
+            cursor: pointer;
+            font-size: 22px;
+            display: inline-block;
+            border-radius: 30px;
+            font-family: "Nunito", sans-serif;
+        }
+
+        .button:hover {
+            box-shadow:
+                0 2.8px 2.2px rgba(0, 0, 0, 0.034),
+                0 6.7px 5.3px rgba(0, 0, 0, 0.048),
+                0 12.5px 10px rgba(0, 0, 0, 0.06),
+                0 6.3px 17.9px rgba(0, 0, 0, 0.072),
+                0 1.8px 33.4px rgba(0, 0, 0, 0.06),
+                0 10px 80px rgba(0, 0, 0, 0.12);
+        }
+
+        .text {
+            margin-left: -10px;
+            font-size: 17px;
+            text-align: left;
+            font-family: Courier New, monospace;
+            color: rgb(22, 133, 19);
+            font-style: italic;
+            font-weight: 560;
+        }
+
+        body {
+            flex-direction: column;
+            display: flex;
+            height: 100vh;
+        }
+       
+.i{
+    margin: 10px;
+    height: 65px; 
+}
+/* .b1{
+    width: 40px;
+    height: 40px;
+    position: absolute; 
+    left: 96.3%; 
+    top:3%;
+    background: url("https://img.icons8.com/office/40/null/globe.png");
+    border: none;
+    background-repeat: no-repeat;
+    box-shadow: 5px 5px 5px rgb(121, 121, 121);
+    border-radius: 100%;
+
+}
+
+.b2{
+    width: 48px;
+    height: 48px;
+    position: absolute; 
+    left: 96.3%; 
+    top:3%;
+    background: url("https://img.icons8.com/fluency/48/null/world-map--v2.png");
+    background-repeat: no-repeat;
+    border: none;
+    box-shadow: 5px 5px 5px rgb(121, 121, 121);
+}
+
+.b1:hover{
+    cursor: pointer;
+
+} */
+
+/* .leaflet-top{
+    margin-top: 70px;
+} */
+
+/* .leaflet-control-layers-toggle{
+    background-color: black;
+    color: black;
+} */
+
+
+/* 
+@media screen and (max-width:500px){
+
+    .b1, .b2{
+        left: 86.5%;
+    }
+
+}
+
+
+
+@media screen and (max-width: 1200px) and  (min-width: 500px){
+
+    .b1, .b2{
+        top:2%;
+        left: 93%;
+      
+    }
+
+} */
+
+    </style>
+    <script src="https://www.webglearth.com/v2/api.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"/>
+  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"/>
+    <!-- <link rel="stylesheet" href="leaflet-measure.css"> -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+</head>
+<body >
+        <!-- <div id="map1">
+            <input type="button" class="b2"  onclick="os()" style="z-index: 100;" />
+           
+        </div>
+        <div id="map2">
+            <input type="button" class="b1" onclick="initialize()" style="z-index: 10000;" />
+        </div>   -->
+        <section class="content">
+            <div id='map'></div>
+    
+    
+        </section>
+        <div class=" d-flex justify-content-around">
+            <div class="text col-lg-6 col-md-6 col-sm-6">Select Co-ordinates with the help of toolbar of your favourite
+                place to analyze Green Area.
+                <br> Click Submit to continue.
+            </div>
+            <div class=" col-lg-6 col-md-6 col-sm-6">
+                <form action="/result" entype="multipart/formdata">
+                    <button class="button" id="dis" onclick="result()" disabled="disabled">Submit</button>
+                </form>
+                <a id="downloadAnchorElem" href="C:\Users\admin\PycharmProjects\greenproject\" style="display:none "></a>
+            </div>
+        </div> 
+    <!-- <script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js" integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg=" crossorigin=""></script> -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+    <!-- <script src="leaflet-measure.js"></script> -->
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script >
+
+const map = new L.map('map').setView([24.8607, 67.0011], 14);
+const titleUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+const tiles = L.tileLayer(titleUrl);
+googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
+    maxZoom: 20,
+    subdomains:['mt0','mt1','mt2','mt3']
+}).addTo(map);
+
+tile_layer_dc2498bb61612cda2dc78fe615a1205f = L.tileLayer(
+    "https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/maps/ee02ea757998a7c0efa9f15fe5414ae1-dbeb6ed2305069589668cd5a05555cea/tiles/{z}/{x}/{y}",
+    {"attribution": "Map Data \u0026copy; \u003ca href=\"https://earthengine.google.com/\"\u003eGoogle Earth Engine\u003c/a\u003e", "detectRetina": false, "maxNativeZoom": 18, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+);
+
+var baseLayers = {
+    "Satellite<br><img src='static/ss.png' class='i' /> ": googleSat,
+    
+    " Basic Map<br> <img src='static/s.png'  class='i' />": tiles,
+};
+
+var overlays = {
+    " NDVI<br> <img src='static/n.png'  class='i' />": tile_layer_dc2498bb61612cda2dc78fe615a1205f,
+};
+L.control.layers(baseLayers,overlays).addTo(map);
+var drawnItems = new L.FeatureGroup();
+        map.addLayer(drawnItems);
+        // Initialise the draw control and pass it the FeatureGroup of editable layers
+        var drawControl = new L.Control.Draw({
+            edit: {
+                featureGroup: drawnItems
+            }
+        });
+        map.addControl(drawControl);
+        // map.on('draw:created', function (e) {
+        // var type = e.layerType,
+        // layer = e.layer;
+        // if (type === 'marker') {
+        // layer.bindPopup('A popup!');
+        // }
+        // drawnItems.addLayer(layer);
+        // });
+        L.Control.geocoder({position:'topleft'}).addTo(map);
+        
+        map.on('draw:created', function (e) {
+            var type = e.layerType,
+                layer = e.layer;
+
+            if (type === 'polygon' || type === 'rectangle') {
+                // structure the geojson object
+                var geojson = {};
+                geojson['type'] = 'Feature';
+                geojson['geometry'] = {};
+                geojson['geometry']['type'] = "Polygon";
+
+                // export the coordinates from the layer
+                coordinates = [];
+                latlngs = layer.getLatLngs();
+                for (var i = 0; i < latlngs.length; i++) {
+                    coordinates.push([latlngs[i].lng, latlngs[i].lat])
+                }
+
+                // push the coordinates to the json geometry
+                geojson['geometry']['coordinates'] = [coordinates];
+                fetch('/result', {
+
+                    // Specify the method
+                    method: 'POST',
+
+                    // A JSON payload
+                    body: JSON.stringify({
+                        geojson
+                    })
+                }).then(function (response) { // At this point, Flask has printed our JSON
+                    return response.text();
+                }).then(function (text) {
+
+                    console.log('POST response: ');
+
+                    // Should be 'OK' if everything was successful
+                    console.log(text);
+                });
+
+                // Finally, show the poly as a geojson object in the console
+                window.alert("Co-ordinates are saved\nPlease click Submit to proceed");
+                var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(geojson));
+                document.getElementById("dis").disabled = false;
+
+
+            }
+
+            else {
+                window.alert("Co-ordinates are not selected. \n Please select coordinates with the help of Rectangle or Polygon.");
+                document.getElementById("dis").disabled = true;
+            }
+
+            drawnItems.addLayer(layer);
+
+
+        });
+     
+        map.on(L.Draw.Event.EDITED, function(event) {
+            var layers = event.layers,
+              content = null;
+            layers.eachLayer(function(layer) {
+              content = getPopupContent(layer);
+              if (content !== null) {
+                layer.setPopupContent(content);
+              }
+          
+              // Update info to feature properties
+              var layer = layer;
+              feature = layer.feature = layer.feature || {};
+              var props = feature.properties = feature.properties || {};
+              props.info = content;
+            });
+            console.log(JSON.stringify(drawnItems.toGeoJSON()));
+          });
+          
+          // Object(s) deleted - update console log
+          map.on(L.Draw.Event.DELETED, function(event) {
+            console.log(JSON.stringify(drawnItems.toGeoJSON()));
+          });
+          
+          // Map Title
+          // var title = new L.Control({position: 'bottomleft'});
+          // title.onAdd = function (map) {
+          //   this._div = L.DomUtil.create('div', 'info');
+          //   this.update();
+          //   return this._div;
+          // };
+          //title.update = function () {
+            //this._div.innerHTML = 'Create some features<br>with drawing tools<br>then export to geojson file'
+          //};
+          //title.addTo(map);
+          
+          // Export Button
+          var showExport = '<a href="#" onclick="geojsonExport()" title="Export to GeoJSON File " type="button" class="btn btn-dark btn-sm text-light"><i class="fa fa-download" aria-hidden="true"></i></a>';
+          
+          var showExportButton = new L.Control({position: "topleft"});
+          showExportButton.onAdd = function (map) {
+            this._div = L.DomUtil.create('div');
+            this._div.innerHTML = showExport
+            return this._div;
+          };
+          showExportButton.addTo(map);
+          
+          
+          // Export to GeoJSON File
+          function geojsonExport(){
+            let nodata = '{"type":"FeatureCollection","features":[]}';
+            let jsonData = (JSON.stringify(drawnItems.toGeoJSON()));
+            let dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(jsonData);
+            let datenow = new Date();
+            let datenowstr = datenow.toLocaleDateString('en-GB');
+            let exportFileDefaultName = 'export_draw_'+ datenowstr + '.geojson';
+            let linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            if (jsonData == nodata) {
+              alert('No features are drawn');
+            } else {
+              linkElement.click();
+            }
+          }
+          // measure control
+        //   var measureControl = new L.Control.Measure({position: 'topleft'});
+        //   measureControl.addTo(map);
+          
+
+
+
+        // map.addEventListener('mousedown', function (ev) {
+        //     start = ev.latlng;
+        // });
+        // map.addEventListener('mouseup', function (ev) {
+        //     end = ev.latlng;
+        //     window.alert("POINT 1: " + start.lat + " " + start.lng + " " + "POINT 2: " + end.lat + " " + end.lng + " ");
+        // });
+
+
+        function copyStringToClipboard(str) {
+            // Create new element
+            var el = document.createElement('textarea');
+            // Set value (string to be copied)
+            el.value = str;
+            // Set non-editable to avoid focus and move outside of view
+            el.setAttribute('readonly', '');
+            el.style = { position: 'absolute', left: '-9999px' };
+            document.body.appendChild(el);
+            // Select text inside element
+            el.select();
+            // Copy text to clipboard
+            document.execCommand('copy');
+            // Remove temporary element
+            document.body.removeChild(el);
+        }
+
+        // map.on("contextmenu", function (event) {
+        //     lats.push(event.latlng.lat);
+        //     longs.push(event.latlng.lng);
+        //     L.marker(event.latlng).addTo(map);
+        //     //window.alert("HAMAMED")
+        // });
+        // map.on("dblclick", function (event) {
+        //     var i;
+        //     var out = "";
+        //     for (i = 0; i < lats.length; i++) {
+        //         out = out + longs[i] + "," + lats[i] + "\n";
+        //     }
+        //     window.alert(out)
+
+        //     copyStringToClipboard(out);
+        // });
+
+
+        // document.getElementById("transitmap").addEventListener("contextmenu", function (event) {
+        //     // Prevent the browser's context menu from appearing
+        //     event.preventDefault();
+
+        //     // Add marker
+        //     // L.marker([lat, lng], ....).addTo(map);
+        //     alert(lat + ' - ' + lng);
+
+        //     return false; // To disable default popup.
+        // });
+
+
+
+// // Object created - bind popup to layer, add to feature group
+
+//   var imageUrl = '2.jpg',
+//       imageBounds = [[25.147780594624404, 67.21413016319276], [25.14627038475966, 67.21496164798738]];
+//       [[[25.147767,67.214119],[25.147744,67.214892],[25.146982,67.214858],[25.14706,67.215141],[25.146298,67.214943],[25.146283,67.213871],[25.147767,67.214119]]]
+  
+//   L.imageOverlay(imageUrl, imageBounds).addTo(map);
+  
+//   map.setMaxBounds(imageBounds);
+    
+//         function initialize() {
+//     document.getElementById('map1').style.display='block';
+//     document.getElementById('map2').style.display='none';
+//     var e = new WE.map('map1');
+//     WE.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
+//         subdomains:['mt0','mt1','mt2','mt3'],
+//       }).addTo(e);
+//       e.setView([33.738045,  73.084488], 2.5);
+
+//   }
+
+// function os(){
+    
+//     document.getElementById('map2').style.display='block';
+//     document.getElementById('map1').style.display='none';
+ 
+// const map = new L.map('map2').setView([24.8607, 67.0011], 14);
+// const titleUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+// const tiles = L.tileLayer(titleUrl);;
+// googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
+//     maxZoom: 20,
+//     subdomains:['mt0','mt1','mt2','mt3']
+// }).addTo(map);
+
+// tile_layer_dc2498bb61612cda2dc78fe615a1205f = L.tileLayer(
+//     "https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/maps/ee02ea757998a7c0efa9f15fe5414ae1-dbeb6ed2305069589668cd5a05555cea/tiles/{z}/{x}/{y}",
+//     {"attribution": "Map Data \u0026copy; \u003ca href=\"https://earthengine.google.com/\"\u003eGoogle Earth Engine\u003c/a\u003e", "detectRetina": false, "maxNativeZoom": 18, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+// );
+
+// var baseLayers = {
+//     "Satellite<br><img src='static/ss.png' class='i' /> ": googleSat,
+    
+//     " Basic Map<br> <img src='static/s.png'  class='i' />": tiles,
+// };
+
+// var overlays = {
+//     " NDVI<br> <img src='static/n.png'  class='i' />": tile_layer_dc2498bb61612cda2dc78fe615a1205f,
+// };
+// L.control.layers(baseLayers,overlays).addTo(map);
+// var drawnItems = new L.FeatureGroup();
+//         map.addLayer(drawnItems);
+     
+//         var drawControl = new L.Control.Draw({
+//             edit: {
+//                 featureGroup: drawnItems
+//             }
+//         });
+//         map.addControl(drawControl);
+   
+//         L.Control.geocoder({position:'topleft'}).addTo(map);
+//         map.on('draw:created', function (e) {
+//             var type = e.layerType,
+//                 layer = e.layer;
+
+//             if (type === 'polygon' || type === 'rectangle') {
+              
+//                 var geojson = {};
+//                 geojson['type'] = 'Feature';
+//                 geojson['geometry'] = {};
+//                 geojson['geometry']['type'] = "Polygon";
+
+              
+//                 coordinates = [];
+//                 latlngs = layer.getLatLngs();
+//                 for (var i = 0; i < latlngs.length; i++) {
+//                     coordinates.push([latlngs[i].lng, latlngs[i].lat])
+//                 }
+
+              
+//                 geojson['geometry']['coordinates'] = [coordinates];
+//                 fetch('/result', {
+
+                
+//                     method: 'POST',
+
+                 
+//                     body: JSON.stringify({
+//                         geojson
+//                     })
+//                 }).then(function (response) { 
+//                     return response.text();
+//                 }).then(function (text) {
+
+//                     console.log('POST response: ');
+
+        
+//                     console.log(text);
+//                 });
+
+        
+//                 window.alert("Co-ordinates are saved\nPlease click Submit to proceed");
+//                 var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(geojson));
+//                 document.getElementById("dis").disabled = false;
+
+
+//             }
+
+//             else {
+//                 window.alert("Co-ordinates are not selected. \n Please select coordinates with the help of Rectangle or Polygon.");
+//                 document.getElementById("dis").disabled = true;
+//             }
+
+//             drawnItems.addLayer(layer);
+
+
+//         });
+     
+//         map.on(L.Draw.Event.EDITED, function(event) {
+//             var layers = event.layers,
+//               content = null;
+//             layers.eachLayer(function(layer) {
+//               content = getPopupContent(layer);
+//               if (content !== null) {
+//                 layer.setPopupContent(content);
+//               }
+          
+        
+//               var layer = layer;
+//               feature = layer.feature = layer.feature || {};
+//               var props = feature.properties = feature.properties || {};
+//               props.info = content;
+//             });
+//             console.log(JSON.stringify(drawnItems.toGeoJSON()));
+//           });
+          
+         
+//           map.on(L.Draw.Event.DELETED, function(event) {
+//             console.log(JSON.stringify(drawnItems.toGeoJSON()));
+//           });
+          
+      
+//           var showExport = '<a href="#" onclick="geojsonExport()" title="Export to GeoJSON File " type="button" class="btn btn-dark btn-sm text-light"><i class="fa fa-download" aria-hidden="true"></i></a>';
+          
+//           var showExportButton = new L.Control({position: "topleft"});
+//           showExportButton.onAdd = function (map) {
+//             this._div = L.DomUtil.create('div');
+//             this._div.innerHTML = showExport
+//             return this._div;
+//           };
+//           showExportButton.addTo(map);
+          
+          
+   
+//           function geojsonExport(){
+//             let nodata = '{"type":"FeatureCollection","features":[]}';
+//             let jsonData = (JSON.stringify(drawnItems.toGeoJSON()));
+//             let dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(jsonData);
+//             let datenow = new Date();
+//             let datenowstr = datenow.toLocaleDateString('en-GB');
+//             let exportFileDefaultName = 'export_draw_'+ datenowstr + '.geojson';
+//             let linkElement = document.createElement('a');
+//             linkElement.setAttribute('href', dataUri);
+//             linkElement.setAttribute('download', exportFileDefaultName);
+//             if (jsonData == nodata) {
+//               alert('No features are drawn');
+//             } else {
+//               linkElement.click();
+//             }
+//           }
+
+    
+// }
+    </script>
+  
+  
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>
+
