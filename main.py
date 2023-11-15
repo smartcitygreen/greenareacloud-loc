@@ -323,11 +323,11 @@ def addfield():
         db.session.commit()
         print("added")
         id = field.fieldid
-        if not os.path.exists("./tmp/thumb"):
-            os.mkdir("./tmp/thumb")
+        if not os.path.exists(dir_path+"/tmp/thumb"):
+            os.mkdir(dir_path+"/tmp/thumb")
         image.save('./tmp/thumb/thumb.png')
         move_files_in_folder_to_cloud_storage(bucket_name, './tmp/thumb',dest_dir=userid+'/'+str(id))
-        if os.path.exists("./tmp/thumb/thumb.png"):
+        if os.path.exists(dir_path+"/tmp/thumb/thumb.png"):
             os.unlink('./tmp/thumb/thumb.png')
         
         print("id",id)
@@ -834,10 +834,10 @@ def code():
         arraymsn=msavi.tolist() 
         arrayms.append(arraymsn)
 ###############################################################
-        np.savetxt("./tmp/ndvi-arr.csv", ndvi, delimiter=",")
-        np.savetxt("./tmp/ndmi-arr.csv", ndmi, delimiter=",")
-        np.savetxt("./tmp/ndre-arr.csv", ndre, delimiter=",")
-        np.savetxt("./tmp/msavi-arr.csv", msavi, delimiter=",")
+        np.savetxt(dir_path+"/tmp/ndvi-arr.csv", ndvi, delimiter=",")
+        np.savetxt(dir_path+"/tmp/ndmi-arr.csv", ndmi, delimiter=",")
+        np.savetxt(dir_path+"/tmp/ndre-arr.csv", ndre, delimiter=",")
+        np.savetxt(dir_path+"/tmp/msavi-arr.csv", msavi, delimiter=",")
     
         print("ndvi")
         print("ndvi.shape", ndvi.shape)
@@ -885,14 +885,14 @@ def code():
         # for i in data:
         #     minVal.append(i[1])
         #     maxVal.append(i[2])
-        if not os.path.exists("./tmp/ndmi"):
-            os.mkdir("./tmp/ndmi")
-        if not os.path.exists("./tmp/ndvi"):
-            os.mkdir("./tmp/ndvi")
-        if not os.path.exists("./tmp/ndre"):
-            os.mkdir("./tmp/ndre")
-        if not os.path.exists("./tmp/msavi"):
-            os.mkdir("./tmp/msavi")
+        if not os.path.exists(dir_path+"/tmp/ndmi"):
+            os.mkdir(dir_path+"/tmp/ndmi")
+        if not os.path.exists(dir_path+"/tmp/ndvi"):
+            os.mkdir(dir_path+"/tmp/ndvi")
+        if not os.path.exists(dir_path+"/tmp/ndre"):
+            os.mkdir(dir_path+"/tmp/ndre")
+        if not os.path.exists(dir_path+"/tmp/msavi"):
+            os.mkdir(dir_path+"/tmp/msavi")
 
         # print min(minVal)
         # print max(maxVal)
@@ -924,7 +924,7 @@ def code():
     
         #     print("ndvi array =", ndvi)
             
-        np.savetxt("./tmp/final-ndvi.csv", ndvi, delimiter=",")
+        np.savetxt(dir_path+"/tmp/final-ndvi.csv", ndvi, delimiter=",")
         # file = "final-ndvi.csv"
         ndvi[ndvi >= 0.5] = 0
         blue = rgb[:, :, 0]
@@ -996,14 +996,14 @@ def code():
                 thewriter.writerow(['date', 'min','avg','max'])
             thewriter.writerow([q,minms,avgms,maxms ])
 
-        if not os.path.exists("./tmp/viplot"):
-            os.mkdir("./tmp/viplot")
-        if not os.path.exists("./tmp/miplot"):
-            os.mkdir("./tmp/miplot")
-        if not os.path.exists("./tmp/replot"):
-            os.mkdir("./tmp/replot")
-        if not os.path.exists("./tmp/msplot"):
-            os.mkdir("./tmp/msplot")
+        if not os.path.exists(dir_path+"/tmp/viplot"):
+            os.mkdir(dir_path+"/tmp/viplot")
+        if not os.path.exists(dir_path+"/tmp/miplot"):
+            os.mkdir(dir_path+"/tmp/miplot")
+        if not os.path.exists(dir_path+"/tmp/replot"):
+            os.mkdir(dir_path+"/tmp/replot")
+        if not os.path.exists(dir_path+"/tmp/msplot"):
+            os.mkdir(dir_path+"/tmp/msplot")
         
 
         import matplotlib
@@ -1022,8 +1022,8 @@ def code():
                     xticklabels=False,
                     cbar=False
                 )
-        plt.savefig("./tmp/viplot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
-        # plotvi= "./tmp/viplot/{}.jpg".format(a)
+        plt.savefig(dir_path+"/tmp/viplot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
+        # plotvi= dir_path+"/tmp/viplot/{}.jpg".format(a)
         pathvi.append("/viplot/{}.png".format(q))
 
         colormi = pd.read_csv('./tmp/ndmi-arr.csv')
@@ -1043,8 +1043,8 @@ def code():
                     xticklabels=False,
                     cbar=False
                 )
-        plt.savefig("./tmp/miplot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
-        # plotmi= "./tmp/miplot/{}.jpg".format(a)
+        plt.savefig(dir_path+"/tmp/miplot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
+        # plotmi= dir_path+"/tmp/miplot/{}.jpg".format(a)
         
         pathmi.append("/miplot/{}.png".format(q))
 
@@ -1061,8 +1061,8 @@ def code():
                     xticklabels=False,
                     cbar=False
                 )
-        plt.savefig("./tmp/replot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
-        # plotvi= "./tmp/viplot/{}.jpg".format(a)
+        plt.savefig(dir_path+"/tmp/replot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
+        # plotvi= dir_path+"/tmp/viplot/{}.jpg".format(a)
         pathre.append("/replot/{}.png".format(q))
 
         colorms = pd.read_csv('./tmp/msavi-arr.csv')
@@ -1078,8 +1078,8 @@ def code():
                     xticklabels=False,
                     cbar=False
                 )
-        plt.savefig("./tmp/msplot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
-        # plotvi= "./tmp/viplot/{}.jpg".format(a)
+        plt.savefig(dir_path+"/tmp/msplot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
+        # plotvi= dir_path+"/tmp/viplot/{}.jpg".format(a)
         pathms.append("/msplot/{}.png".format(q))
         a = a + 1
     if percent < 30:
@@ -1091,13 +1091,13 @@ def code():
     
    
    
-    datavi = pd.read_csv('./tmp/ndvi.csv', on_bad_lines='skip')
-    datami = pd.read_csv('./tmp/ndmi.csv', on_bad_lines='skip')
-    datare = pd.read_csv('./tmp/ndre.csv', on_bad_lines='skip')
-    datams = pd.read_csv('./tmp/msavi.csv', on_bad_lines='skip')
+    datavi = pd.read_csv(dir_path+'/tmp/ndvi.csv', on_bad_lines='skip')
+    datami = pd.read_csv(dir_path+'/tmp/ndmi.csv', on_bad_lines='skip')
+    datare = pd.read_csv(dir_path+'/tmp/ndre.csv', on_bad_lines='skip')
+    datams = pd.read_csv(dir_path+'/tmp/msavi.csv', on_bad_lines='skip')
 
     
-    temp_location = './tmp/'         #here
+    temp_location = dir_path+'/tmp/'         #here
     bucket_name = 'instant-node-238517.appspot.com'
     
     def cors_configuration(bucket_name):
@@ -1140,7 +1140,7 @@ def code():
 
     
     # import shutil
-    folder = './tmp'
+    folder = dir_path+'/tmp'
     for filename in os.listdir(folder):
         file_path = os.path.join(folder, filename)
         try:
