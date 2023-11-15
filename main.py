@@ -59,7 +59,7 @@ db=SQLAlchemy(app)
 
 cred = credentials.Certificate("instant-node-238517-firebase-adminsdk-tiqdt-a7fbecd401.json")
 
-firebase_admin.initialize_app()
+firebase_admin.initialize_app(cred)
 
 
 
