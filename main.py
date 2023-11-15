@@ -323,12 +323,12 @@ def addfield():
         db.session.commit()
         print("added")
         id = field.fieldid
-        if not os.path.exists("./tmp/thumb"):
-            os.mkdir("./tmp/thumb")
-        image.save('./tmp/thumb/thumb.png')
-        move_files_in_folder_to_cloud_storage(bucket_name, './tmp/thumb',dest_dir=userid+'/'+str(id))
-        if os.path.exists("./tmp/thumb/thumb.png"):
-            os.unlink('./tmp/thumb/thumb.png')
+        if not os.path.exists("./timp/thumb"):
+            os.mkdir("./timp/thumb")
+        image.save('./timp/thumb/thumb.png')
+        move_files_in_folder_to_cloud_storage(bucket_name, './timp/thumb',dest_dir=userid+'/'+str(id))
+        if os.path.exists("./timp/thumb/thumb.png"):
+            os.unlink('./timp/thumb/thumb.png')
         
         print("id",id)
         print("polygon",polygon)
@@ -367,13 +367,13 @@ def code():
     arraymi=[]
     arrayre=[]
     arrayms=[]
-    with open('./tmp/ndvi.csv', mode='w+') as csvfile:
+    with open('./timp/ndvi.csv', mode='w+') as csvfile:
             csvfile.truncate(0)
-    with open('./tmp/ndmi.csv', mode='w+') as csvfile:
+    with open('./timp/ndmi.csv', mode='w+') as csvfile:
             csvfile.truncate(0)
-    with open('./tmp/ndre.csv', mode='w+') as csvfile:
+    with open('./timp/ndre.csv', mode='w+') as csvfile:
             csvfile.truncate(0)
-    with open('./tmp/msavi.csv', mode='w+') as csvfile:
+    with open('./timp/msavi.csv', mode='w+') as csvfile:
             csvfile.truncate(0)
     # global polygon
     # global selfield2
@@ -834,10 +834,10 @@ def code():
         arraymsn=msavi.tolist() 
         arrayms.append(arraymsn)
 ###############################################################
-        np.savetxt("./tmp/ndvi-arr.csv", ndvi, delimiter=",")
-        np.savetxt("./tmp/ndmi-arr.csv", ndmi, delimiter=",")
-        np.savetxt("./tmp/ndre-arr.csv", ndre, delimiter=",")
-        np.savetxt("./tmp/msavi-arr.csv", msavi, delimiter=",")
+        np.savetxt("./timp/ndvi-arr.csv", ndvi, delimiter=",")
+        np.savetxt("./timp/ndmi-arr.csv", ndmi, delimiter=",")
+        np.savetxt("./timp/ndre-arr.csv", ndre, delimiter=",")
+        np.savetxt("./timp/msavi-arr.csv", msavi, delimiter=",")
     
         print("ndvi")
         print("ndvi.shape", ndvi.shape)
@@ -885,14 +885,14 @@ def code():
         # for i in data:
         #     minVal.append(i[1])
         #     maxVal.append(i[2])
-        if not os.path.exists("./tmp/ndmi"):
-            os.mkdir("./tmp/ndmi")
-        if not os.path.exists("./tmp/ndvi"):
-            os.mkdir("./tmp/ndvi")
-        if not os.path.exists("./tmp/ndre"):
-            os.mkdir("./tmp/ndre")
-        if not os.path.exists("./tmp/msavi"):
-            os.mkdir("./tmp/msavi")
+        if not os.path.exists("./timp/ndmi"):
+            os.mkdir("./timp/ndmi")
+        if not os.path.exists("./timp/ndvi"):
+            os.mkdir("./timp/ndvi")
+        if not os.path.exists("./timp/ndre"):
+            os.mkdir("./timp/ndre")
+        if not os.path.exists("./timp/msavi"):
+            os.mkdir("./timp/msavi")
 
         # print min(minVal)
         # print max(maxVal)
@@ -924,7 +924,7 @@ def code():
     
         #     print("ndvi array =", ndvi)
             
-        np.savetxt("./tmp/final-ndvi.csv", ndvi, delimiter=",")
+        np.savetxt("./timp/final-ndvi.csv", ndvi, delimiter=",")
         # file = "final-ndvi.csv"
         ndvi[ndvi >= 0.5] = 0
         blue = rgb[:, :, 0]
@@ -969,47 +969,47 @@ def code():
 
         
 
-        with open('./tmp/main.csv', 'w+', newline="") as f:
+        with open('./timp/main.csv', 'w+', newline="") as f:
             thewriter = csv.writer(f)
             if a == 1:
                 thewriter.writerow(['Date', 'TotalArea', 'GreenArea', 'NongreenArea', 'Percentage', 'Coordinates'])
             thewriter.writerow([w, total, green, nongreen, percent, fieldCoords])
         
-        with open('./tmp/ndvi.csv', 'a', newline="") as f:
+        with open('./timp/ndvi.csv', 'a', newline="") as f:
             thewriter = csv.writer(f)
             if a == 1:
                 thewriter.writerow(['date', 'min','avg','max'])
             thewriter.writerow([q,minvi,avgvi,maxvi ])
-        with open('./tmp/ndmi.csv', 'a', newline="") as f:
+        with open('./timp/ndmi.csv', 'a', newline="") as f:
             thewriter = csv.writer(f)
             if a == 1:
                 thewriter.writerow(['date', 'min','avg','max'])
             thewriter.writerow([q,minmi,avgmi,maxmi ])
-        with open('./tmp/ndre.csv', 'a', newline="") as f:
+        with open('./timp/ndre.csv', 'a', newline="") as f:
             thewriter = csv.writer(f)
             if a == 1:
                 thewriter.writerow(['date', 'min','avg','max'])
             thewriter.writerow([q,minre,avgre,maxre ])
-        with open('./tmp/msavi.csv', 'a', newline="") as f:
+        with open('./timp/msavi.csv', 'a', newline="") as f:
             thewriter = csv.writer(f)
             if a == 1:
                 thewriter.writerow(['date', 'min','avg','max'])
             thewriter.writerow([q,minms,avgms,maxms ])
 
-        if not os.path.exists("./tmp/viplot"):
-            os.mkdir("./tmp/viplot")
-        if not os.path.exists("./tmp/miplot"):
-            os.mkdir("./tmp/miplot")
-        if not os.path.exists("./tmp/replot"):
-            os.mkdir("./tmp/replot")
-        if not os.path.exists("./tmp/msplot"):
-            os.mkdir("./tmp/msplot")
+        if not os.path.exists("./timp/viplot"):
+            os.mkdir("./timp/viplot")
+        if not os.path.exists("./timp/miplot"):
+            os.mkdir("./timp/miplot")
+        if not os.path.exists("./timp/replot"):
+            os.mkdir("./timp/replot")
+        if not os.path.exists("./timp/msplot"):
+            os.mkdir("./timp/msplot")
         
 
         import matplotlib
         matplotlib.use('Agg')
         import matplotlib.pyplot as plt
-        colorvi = pd.read_csv('./tmp/ndvi-arr.csv')
+        colorvi = pd.read_csv('./timp/ndvi-arr.csv')
         color_palettevi = sns.color_palette("RdYlGn",as_cmap=True)
 
         # Pass palette to plot and set axis ranges
@@ -1022,11 +1022,11 @@ def code():
                     xticklabels=False,
                     cbar=False
                 )
-        plt.savefig("./tmp/viplot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
-        # plotvi= "./tmp/viplot/{}.jpg".format(a)
+        plt.savefig("./timp/viplot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
+        # plotvi= "./timp/viplot/{}.jpg".format(a)
         pathvi.append("/viplot/{}.png".format(q))
 
-        colormi = pd.read_csv('./tmp/ndmi-arr.csv')
+        colormi = pd.read_csv('./timp/ndmi-arr.csv')
         for i in np.arange(0,1,0.1):
             colormi[colormi == i] = i + 0.01
         colors=["#AF998C",'#B49E95','#BAA49E','#BFAAA8','#C5B0B2','#CBB6BC','#D0BBC5', '#D6C1CF', '#CBB9D2', '#BAADD3', '#A8A0D5','#9894D6','#8788D7','#767BD8','#646ED9','#5362DA','#4356DB','#3249DC','#213DDD','#0F30DE']
@@ -1043,12 +1043,12 @@ def code():
                     xticklabels=False,
                     cbar=False
                 )
-        plt.savefig("./tmp/miplot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
-        # plotmi= "./tmp/miplot/{}.jpg".format(a)
+        plt.savefig("./timp/miplot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
+        # plotmi= "./timp/miplot/{}.jpg".format(a)
         
         pathmi.append("/miplot/{}.png".format(q))
 
-        colorre = pd.read_csv('./tmp/ndre-arr.csv')
+        colorre = pd.read_csv('./timp/ndre-arr.csv')
         color_palettere = sns.color_palette("RdYlGn",as_cmap=True)
 
         # Pass palette to plot and set axis ranges
@@ -1061,11 +1061,11 @@ def code():
                     xticklabels=False,
                     cbar=False
                 )
-        plt.savefig("./tmp/replot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
-        # plotvi= "./tmp/viplot/{}.jpg".format(a)
+        plt.savefig("./timp/replot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
+        # plotvi= "./timp/viplot/{}.jpg".format(a)
         pathre.append("/replot/{}.png".format(q))
 
-        colorms = pd.read_csv('./tmp/msavi-arr.csv')
+        colorms = pd.read_csv('./timp/msavi-arr.csv')
         color_palettems = sns.color_palette("RdYlGn",as_cmap=True)
 
         # Pass palette to plot and set axis ranges
@@ -1078,8 +1078,8 @@ def code():
                     xticklabels=False,
                     cbar=False
                 )
-        plt.savefig("./tmp/msplot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
-        # plotvi= "./tmp/viplot/{}.jpg".format(a)
+        plt.savefig("./timp/msplot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
+        # plotvi= "./timp/viplot/{}.jpg".format(a)
         pathms.append("/msplot/{}.png".format(q))
         a = a + 1
     if percent < 30:
@@ -1091,13 +1091,13 @@ def code():
     
    
    
-    datavi = pd.read_csv('./tmp/ndvi.csv', on_bad_lines='skip')
-    datami = pd.read_csv('./tmp/ndmi.csv', on_bad_lines='skip')
-    datare = pd.read_csv('./tmp/ndre.csv', on_bad_lines='skip')
-    datams = pd.read_csv('./tmp/msavi.csv', on_bad_lines='skip')
+    datavi = pd.read_csv('./timp/ndvi.csv', on_bad_lines='skip')
+    datami = pd.read_csv('./timp/ndmi.csv', on_bad_lines='skip')
+    datare = pd.read_csv('./timp/ndre.csv', on_bad_lines='skip')
+    datams = pd.read_csv('./timp/msavi.csv', on_bad_lines='skip')
 
     
-    temp_location = './tmp/'         #here
+    temp_location = './timp/'         #here
     bucket_name = 'instant-node-238517.appspot.com'
     
     def cors_configuration(bucket_name):
@@ -1140,7 +1140,7 @@ def code():
 
     
     # import shutil
-    folder = './tmp'
+    folder = './timp'
     for filename in os.listdir(folder):
         file_path = os.path.join(folder, filename)
         try:
