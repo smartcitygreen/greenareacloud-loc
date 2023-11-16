@@ -1458,8 +1458,8 @@ userID = userid.toString();
 fieldID = fieldid.toString();
 // console.log(userID,fieldID);
 // console.log(typeof(userID),typeof(fieldID));
-
-var pathref = storage.ref(userID+"/"+fieldID);
+var userfieldpath = userID+"/"+fieldID;
+// var pathref = storage.ref(userID+"/"+fieldID);
   function GetNdvi(sender){
 //     var aElements = sender.parentNode.parentNode.getElementsByTagName("a");
 //                 var aElementsLength = aElements.length;
@@ -1567,10 +1567,12 @@ var aElements = sender.parentNode.parentNode.getElementsByTagName("a");
 		{
 			index = i;
 			var localvi = pathvi[i];
+      let imageUrlvi = "static/"+userfieldpath+localvi;
       
-      pathref.child(localvi).getDownloadURL().then((url)=>{
-        imageUrlvi = url;
-      })
+      // pathref.child(localvi).getDownloadURL().then((url)=>{
+      //   imageUrlvi = url;
+
+      // })
 
       
 			imageBounds = {{ polygonss | safe  }};
@@ -1665,9 +1667,10 @@ var aElements = sender.parentNode.parentNode.getElementsByTagName("a");
 		{
 			index = i;
 			var localmi = pathmi[i];
-      pathref.child(localmi).getDownloadURL().then((url)=>{
-        imageUrlmi = url;
-      })
+      let imageUrlmi = "static/"+userfieldpath+localmi;
+      // pathref.child(localmi).getDownloadURL().then((url)=>{
+      //   imageUrlmi = url;
+      // })
       
 			imageBounds = {{ polygonss | safe  }};
 	
@@ -1771,9 +1774,10 @@ var aElements = sender.parentNode.parentNode.getElementsByTagName("a");
 		{
 			index = i;
 			var localre = pathre[i];
-      pathref.child(localre).getDownloadURL().then((url)=>{
-        imageUrlre = url;
-      })
+      let imageUrlre = "static/"+userfieldpath+localre;
+      // pathref.child(localre).getDownloadURL().then((url)=>{
+      //   imageUrlre = url;
+      // })
       
 			imageBounds = {{ polygonss | safe  }};
 	
@@ -1865,9 +1869,10 @@ var aElements = sender.parentNode.parentNode.getElementsByTagName("a");
 		{
 			index = i;
 			var localms = pathms[i];
-      pathref.child(localms).getDownloadURL().then((url)=>{
-        imageUrlms = url;
-      })
+      let imageUrlms = "static/"+userfieldpath+localms;
+      // pathref.child(localms).getDownloadURL().then((url)=>{
+      //   imageUrlms = url;
+      // })
       
 			imageBounds = {{ polygonss | safe  }};
 	

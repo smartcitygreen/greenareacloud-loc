@@ -358,17 +358,17 @@ function feditfieldcoordsoption(){
             })
         }
     centres.forEach((element, i)=>{ 
-    let thumbpath = storage.ref(userid+"/"+fieldids[i]+"/thumb.png");
-    console.log(userid+"/"+fieldids[i]+"/thumb.png");
-    URLI="";
-    thumbpath.getDownloadURL().then((url)=>{
-        console.log(url);
-        $("#thumb"+i).attr("src",url);
-        });
+    let thumbpath = "static/"+userid+"/"+fieldids[i]+"/thumb.png"
+    // console.log(userid+"/"+fieldids[i]+"/thumb.png");
+    // URLI="";
+    // thumbpath.getDownloadURL().then((url)=>{
+    //     console.log(url);
+    //     $("#thumb"+i).attr("src",url);
+    //     });
         
    markers[i] = L.marker([element.lat,element.lng]).addTo(map)
    .bindPopup("<strong>"+fieldnames[i]+"</strong>");
-    list_str=list_str+"<div id='flds' class='btn' onclick='use("+i+")'><img class='thumb' id='thumb"+i+"' src='"+URLI+"'><a id='fid"+fieldids[i]+"' >"+fieldnames[i]+"</a></div>";
+    list_str=list_str+"<div id='flds' class='btn' onclick='use("+i+")'><img class='thumb' id='thumb"+i+"' src='"+thumbpath+"'><a id='fid"+fieldids[i]+"' >"+fieldnames[i]+"</a></div>";
     })}
 str_end= "<button onclick='addfield()'>Add field</button><button onclick='fdeletefieldoption()'>Delete field</button><button onclick='feditfieldnameoption()'>Edit field name</button>"
 input_str="<form id='fieldname' name='fieldname' method='POST'><input type='text' name='field_name' placeholder='Enter field name' value='newfield'></form>";

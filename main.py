@@ -42,12 +42,14 @@ db_name = 'my_db'
 cloud_sql_connection_name = 'instant-node-238517:europe-west1:vault-cold'
 
 # app.config["SQLALCHEMY_DATABASE_URI"]= f"mysql+pymysql://root:{db_pass}@/{db_name}?unix_socket=/cloudsql/{cloud_sql_connection_name}"
-app.config["SQLALCHEMY_DATABASE_URI"]= f"mysql+pymysql://{db_user}:{db_pass}@34.79.136.221:3306/{db_name}"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"]= True
-app.config["GOOGLE_APPLICATION_CREDENTIALS"]="instant-node-238517-firebase-adminsdk-tiqdt-a7fbecd401.json"
-file_path = os.path.realpath(__file__)
-dir_path = os.path.dirname(file_path)
-keyfilepath=os.path.join(dir_path, 'instant-node-238517-firebase-adminsdk-tiqdt-a7fbecd401.json')
+
+# app.config["GOOGLE_APPLICATION_CREDENTIALS"]="instant-node-238517-firebase-adminsdk-tiqdt-a7fbecd401.json"
+
+basedir = os.path.abspath(os.path.dirname(__file__))
+db_uri = 'sqlite:///' + os.path.join(basedir, 'database.db')
+app.config["SQLALCHEMY_DATABASE_URI"]= db_uri
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"]= False
+keyfilepath=os.path.join(basedir, 'instant-node-238517-firebase-adminsdk-tiqdt-a7fbecd401.json')
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]= keyfilepath
 app.config["GCLOUD_PROJECT"] = "My First Project"
 
@@ -100,9 +102,17 @@ class userField(db.Model):
         return f'<user {str(self.userid)}>', f'<fieldname {str(self.fieldName)}>', f'<fieldCoords {str(self.fieldCoordinates)}>', f'<fieldid {str(self.fieldid)}>'
 
 
+# def model_exists(model_class):
+#     engine = db.get_engine()
+#     return model_class.metadata.tables[model_class.__tablename__].exists(engine)
+
 # with app.app_context():
-#     db.create_all() # <-- don't use this in production! This creates the account table in your sqlite
-#     db.session.commit()
+#     if not model_exists(Account) and model_exists(userField):
+#         db.create_all() # <-- don't use this in production!
+#         db.session.commit()
+with app.app_context():
+    db.create_all() # <-- don't use this in production!
+    db.session.commit()
 
 polygon_corrected=[]
 
@@ -212,10 +222,7 @@ def map():
             centres.append(centre)
         client = storage.Client()  # Implicit environ set-up
         bucket_name = 'instant-node-238517.appspot.com'
-        bucket = client.bucket(bucket_name)
-        
-
-            
+        bucket = client.bucket(bucket_name)       
             
     userid=current_user.get_id()
     return render_template("change.html", fieldsStr=fieldsinStr, centres=centres,user=current_user.name,fieldnames=fieldnames,fieldids=fieldids,userid=str(userid)) #pass fields to template
@@ -233,12 +240,11 @@ def deletefield():
         field = userField.query.filter_by(fieldid=fieldid).first()
         db.session.delete(field)
         db.session.commit()
-        print("deleted")
-        bucket_name = 'instant-node-238517.appspot.com'
         userid = current_user.get_id()
-        bucket = storage.Client().get_bucket(bucket_name)
-        blob = bucket.blob(userid+'/'+str(fieldid))
-        blob.delete()
+        userfieldpth = url_for('static', filename=str(userid) +'/'+ str(fieldid))
+        userfieldpthOS= os.path.join(basedir, 'static', str(userid), str(fieldid))
+        if os.path.exists(userfieldpthOS):
+            shutil.rmtree(userfieldpthOS)
         
     return render_template("change.html")
 
@@ -274,18 +280,18 @@ def editfieldcoords():
                 print("edited")
             return render_template("change.html")
 
-def move_files_in_folder_to_cloud_storage(bucket_name, src_dir,dest_dir):
-        """Upload files in a local folder to a Google Cloud Storage bucket."""
-        storage_client = storage.Client()
-        bucket = storage_client.get_bucket(bucket_name)
+# def move_files_in_folder_to_cloud_storage(bucket_name, src_dir,dest_dir):
+#         """Upload files in a local folder to a Google Cloud Storage bucket."""
+#         storage_client = storage.Client()
+#         bucket = storage_client.get_bucket(bucket_name)
         
-        for filename in os.listdir(src_dir):
-            file_pth = os.path.join(src_dir, filename)
-            if(not(storage.Blob(bucket=bucket, name=os.path.join(dest_dir,filename)).exists())):
-                blob = bucket.blob(dest_dir+'/'+filename)
-                blob.upload_from_filename(file_pth)
-            # print("File {} uploaded to {}.".format(filename, bucket_name))
-        shutil.rmtree(src_dir)
+#         for filename in os.listdir(src_dir):
+#             file_pth = os.path.join(src_dir, filename)
+#             if(not(storage.Blob(bucket=bucket, name=os.path.join(dest_dir,filename)).exists())):
+#                 blob = bucket.blob(dest_dir+'/'+filename)
+#                 blob.upload_from_filename(file_pth)
+#             # print("File {} uploaded to {}.".format(filename, bucket_name))
+#         shutil.rmtree(src_dir)
 
 @app.route('/addfield', methods=['GET', 'POST'])                  #this and the function def result() renders the resultnew.html file in templates folder
 @login_required
@@ -303,7 +309,7 @@ def addfield():
         m.add_polygon(fieldpoly) 
         image=m.render()
 
-        bucket_name = 'instant-node-238517.appspot.com'
+        # bucket_name = 'instant-node-238517.appspot.com'
         userid = current_user.get_id()
         
 
@@ -322,13 +328,16 @@ def addfield():
         db.session.add(field)
         db.session.commit()
         print("added")
-        id = field.fieldid
-        if not os.path.exists(dir_path+"/tmp/thumb"):
-            os.mkdir(dir_path+"/tmp/thumb")
-        image.save('./tmp/thumb/thumb.png')
-        move_files_in_folder_to_cloud_storage(bucket_name, './tmp/thumb',dest_dir=userid+'/'+str(id))
-        if os.path.exists(dir_path+"/tmp/thumb/thumb.png"):
-            os.unlink('./tmp/thumb/thumb.png')
+        fid = field.fieldid
+        userid = current_user.firebase_user_id
+        # userfieldpth = basedir+'/tmp/'+ str(userid) +'/'+ str(fid)
+        userfieldpth = url_for('static', filename=str(userid) +'/'+ str(fid))
+        userfieldpth = userfieldpth.replace("/static", "static")
+        userfieldpthOS= os.path.join(basedir, 'static', str(userid), str(fid))
+        if not os.path.exists(userfieldpthOS):
+            os.makedirs(userfieldpthOS)
+        image.save(userfieldpth + '/thumb.png')
+        
         
         print("id",id)
         print("polygon",polygon)
@@ -367,14 +376,7 @@ def code():
     arraymi=[]
     arrayre=[]
     arrayms=[]
-    with open('./tmp/ndvi.csv', mode='w+') as csvfile:
-            csvfile.truncate(0)
-    with open('./tmp/ndmi.csv', mode='w+') as csvfile:
-            csvfile.truncate(0)
-    with open('./tmp/ndre.csv', mode='w+') as csvfile:
-            csvfile.truncate(0)
-    with open('./tmp/msavi.csv', mode='w+') as csvfile:
-            csvfile.truncate(0)
+    
     # global polygon
     # global selfield2
     # selfield= selfield2
@@ -397,6 +399,28 @@ def code():
     selected_fieldid= request.form.get('sel')
 
     fields = userField.query.filter_by(userid=current_user.firebase_user_id, fieldid=selected_fieldid).first()
+    userid = current_user.firebase_user_id
+    userfieldpth = url_for('static', filename=str(userid) +'/'+ str(fields.fieldid))
+    userfieldpth = userfieldpth.replace("/static", "static")
+    userfieldpthOS= os.path.join(basedir, 'static', str(userid), str(fields.fieldid))
+
+    if not os.path.exists(os.path.join(userfieldpthOS,"ndvi")):
+        os.makedirs(os.path.join(userfieldpthOS,"ndvi"))
+    if not os.path.exists(os.path.join(userfieldpthOS,"ndmi")):
+        os.makedirs(os.path.join(userfieldpthOS,"ndmi"))
+    if not os.path.exists(os.path.join(userfieldpthOS,"ndre")):
+        os.makedirs(os.path.join(userfieldpthOS,"ndre"))
+    if not os.path.exists(os.path.join(userfieldpthOS,"msavi")):
+        os.makedirs(os.path.join(userfieldpthOS,"msavi"))
+
+    with open(userfieldpth + '/ndvi/ndvi.csv', mode='w+') as csvfile:
+        csvfile.truncate(0)
+    with open(userfieldpth +'/ndmi/ndmi.csv', mode='w+') as csvfile:
+        csvfile.truncate(0)
+    with open(userfieldpth +'/ndre/ndre.csv', mode='w+') as csvfile:
+        csvfile.truncate(0)
+    with open(userfieldpth +'/msavi/msavi.csv', mode='w+') as csvfile:
+        csvfile.truncate(0)
     # for field in fields:
     #     if field.fieldid == int(selfield):
     #         selectedfieldid = field.fieldid
@@ -447,14 +471,14 @@ def code():
     start_date = datetime.date(year1,month1,day1)
     end_date = datetime.date(year2,month2,day2)
 
-    bucket_name = 'instant-node-238517.appspot.com'
-    userid = current_user.get_id()
+    # bucket_name = 'instant-node-238517.appspot.com'
+    # userid = current_user.get_id()
 
-    storage_client = storage.Client()
-    prefix=userid+'/'+str(selected_fieldid)+"/"+"viplot/"
+    # storage_client = storage.Client()
+    # prefix=userid+'/'+str(selected_fieldid)+"/"+"viplot/"
 
     # Note: Client.list_blobs requires at least package version 1.17.0.
-    fieldfilescloud = storage_client.list_blobs(bucket_name, prefix=prefix, delimiter=None)
+    # fieldfilescloud = storage_client.list_blobs(bucket_name, prefix=prefix, delimiter=None)
 
     dt = datetime.date(year1,month1,day1)  # add the starting date according to your satellite, year, month, day
     q = dt.strftime("%Y-%m-%d")
@@ -834,10 +858,10 @@ def code():
         arraymsn=msavi.tolist() 
         arrayms.append(arraymsn)
 ###############################################################
-        np.savetxt(dir_path+"/tmp/ndvi-arr.csv", ndvi, delimiter=",")
-        np.savetxt(dir_path+"/tmp/ndmi-arr.csv", ndmi, delimiter=",")
-        np.savetxt(dir_path+"/tmp/ndre-arr.csv", ndre, delimiter=",")
-        np.savetxt(dir_path+"/tmp/msavi-arr.csv", msavi, delimiter=",")
+        np.savetxt(userfieldpth +"/ndvi/ndvi-arr.csv", ndvi, delimiter=",")
+        np.savetxt(userfieldpth +"/ndmi/ndmi-arr.csv", ndmi, delimiter=",")
+        np.savetxt(userfieldpth +"/ndre/ndre-arr.csv", ndre, delimiter=",")
+        np.savetxt(userfieldpth +"/msavi/msavi-arr.csv", msavi, delimiter=",")
     
         print("ndvi")
         print("ndvi.shape", ndvi.shape)
@@ -885,14 +909,7 @@ def code():
         # for i in data:
         #     minVal.append(i[1])
         #     maxVal.append(i[2])
-        if not os.path.exists(dir_path+"/tmp/ndmi"):
-            os.mkdir(dir_path+"/tmp/ndmi")
-        if not os.path.exists(dir_path+"/tmp/ndvi"):
-            os.mkdir(dir_path+"/tmp/ndvi")
-        if not os.path.exists(dir_path+"/tmp/ndre"):
-            os.mkdir(dir_path+"/tmp/ndre")
-        if not os.path.exists(dir_path+"/tmp/msavi"):
-            os.mkdir(dir_path+"/tmp/msavi")
+
 
         # print min(minVal)
         # print max(maxVal)
@@ -924,7 +941,7 @@ def code():
     
         #     print("ndvi array =", ndvi)
             
-        np.savetxt(dir_path+"/tmp/final-ndvi.csv", ndvi, delimiter=",")
+        np.savetxt(basedir+"/tmp/final-ndvi.csv", ndvi, delimiter=",")
         # file = "final-ndvi.csv"
         ndvi[ndvi >= 0.5] = 0
         blue = rgb[:, :, 0]
@@ -969,47 +986,47 @@ def code():
 
         
 
-        with open('./tmp/main.csv', 'w+', newline="") as f:
+        with open(userfieldpth + '/main.csv', 'w+', newline="") as f:
             thewriter = csv.writer(f)
             if a == 1:
                 thewriter.writerow(['Date', 'TotalArea', 'GreenArea', 'NongreenArea', 'Percentage', 'Coordinates'])
             thewriter.writerow([w, total, green, nongreen, percent, fieldCoords])
         
-        with open('./tmp/ndvi.csv', 'a', newline="") as f:
+        with open(userfieldpth +'/ndvi/ndvi.csv', 'a', newline="") as f:
             thewriter = csv.writer(f)
             if a == 1:
                 thewriter.writerow(['date', 'min','avg','max'])
             thewriter.writerow([q,minvi,avgvi,maxvi ])
-        with open('./tmp/ndmi.csv', 'a', newline="") as f:
+        with open(userfieldpth +'/ndmi/ndmi.csv', 'a', newline="") as f:
             thewriter = csv.writer(f)
             if a == 1:
                 thewriter.writerow(['date', 'min','avg','max'])
             thewriter.writerow([q,minmi,avgmi,maxmi ])
-        with open('./tmp/ndre.csv', 'a', newline="") as f:
+        with open(userfieldpth + '/ndre/ndre.csv', 'a', newline="") as f:
             thewriter = csv.writer(f)
             if a == 1:
                 thewriter.writerow(['date', 'min','avg','max'])
             thewriter.writerow([q,minre,avgre,maxre ])
-        with open('./tmp/msavi.csv', 'a', newline="") as f:
+        with open(userfieldpth +'/msavi/msavi.csv', 'a', newline="") as f:
             thewriter = csv.writer(f)
             if a == 1:
                 thewriter.writerow(['date', 'min','avg','max'])
             thewriter.writerow([q,minms,avgms,maxms ])
 
-        if not os.path.exists(dir_path+"/tmp/viplot"):
-            os.mkdir(dir_path+"/tmp/viplot")
-        if not os.path.exists(dir_path+"/tmp/miplot"):
-            os.mkdir(dir_path+"/tmp/miplot")
-        if not os.path.exists(dir_path+"/tmp/replot"):
-            os.mkdir(dir_path+"/tmp/replot")
-        if not os.path.exists(dir_path+"/tmp/msplot"):
-            os.mkdir(dir_path+"/tmp/msplot")
+        if not os.path.exists(os.path.join(userfieldpthOS,"ndvi","viplot")):
+            os.makedirs(os.path.join(userfieldpthOS,"ndvi","viplot"))
+        if not os.path.exists(os.path.join(userfieldpthOS,"ndmi","miplot")):
+            os.makedirs(os.path.join(userfieldpthOS,"ndmi","miplot"))
+        if not os.path.exists(os.path.join(userfieldpthOS,"ndre","replot")):
+            os.makedirs(os.path.join(userfieldpthOS,"ndre","replot"))
+        if not os.path.exists(os.path.join(userfieldpthOS,"msavi","msplot")):
+            os.makedirs(os.path.join(userfieldpthOS,"msavi","msplot"))
         
 
         import matplotlib
         matplotlib.use('Agg')
         import matplotlib.pyplot as plt
-        colorvi = pd.read_csv('./tmp/ndvi-arr.csv')
+        colorvi = pd.read_csv(userfieldpth+'/ndvi/ndvi-arr.csv')
         color_palettevi = sns.color_palette("RdYlGn",as_cmap=True)
 
         # Pass palette to plot and set axis ranges
@@ -1022,11 +1039,11 @@ def code():
                     xticklabels=False,
                     cbar=False
                 )
-        plt.savefig(dir_path+"/tmp/viplot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
-        # plotvi= dir_path+"/tmp/viplot/{}.jpg".format(a)
-        pathvi.append("/viplot/{}.png".format(q))
+        plt.savefig(userfieldpth+"/ndvi/viplot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
+        # plotvi= basedir+"/tmp/viplot/{}.jpg".format(a)
+        pathvi.append("/ndvi/viplot/{}.png".format(q))
 
-        colormi = pd.read_csv('./tmp/ndmi-arr.csv')
+        colormi = pd.read_csv(userfieldpth+'/ndmi/ndmi-arr.csv')
         for i in np.arange(0,1,0.1):
             colormi[colormi == i] = i + 0.01
         colors=["#AF998C",'#B49E95','#BAA49E','#BFAAA8','#C5B0B2','#CBB6BC','#D0BBC5', '#D6C1CF', '#CBB9D2', '#BAADD3', '#A8A0D5','#9894D6','#8788D7','#767BD8','#646ED9','#5362DA','#4356DB','#3249DC','#213DDD','#0F30DE']
@@ -1043,12 +1060,12 @@ def code():
                     xticklabels=False,
                     cbar=False
                 )
-        plt.savefig(dir_path+"/tmp/miplot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
-        # plotmi= dir_path+"/tmp/miplot/{}.jpg".format(a)
+        plt.savefig(userfieldpth+"/ndmi/miplot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
+        # plotmi= basedir+"/tmp/miplot/{}.jpg".format(a)
         
-        pathmi.append("/miplot/{}.png".format(q))
+        pathmi.append("/ndmi/miplot/{}.png".format(q))
 
-        colorre = pd.read_csv('./tmp/ndre-arr.csv')
+        colorre = pd.read_csv(userfieldpth+'/ndre/ndre-arr.csv')
         color_palettere = sns.color_palette("RdYlGn",as_cmap=True)
 
         # Pass palette to plot and set axis ranges
@@ -1061,11 +1078,11 @@ def code():
                     xticklabels=False,
                     cbar=False
                 )
-        plt.savefig(dir_path+"/tmp/replot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
-        # plotvi= dir_path+"/tmp/viplot/{}.jpg".format(a)
-        pathre.append("/replot/{}.png".format(q))
+        plt.savefig(userfieldpth+"/ndre/replot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
+        # plotvi= basedir+"/tmp/viplot/{}.jpg".format(a)
+        pathre.append("/ndre/replot/{}.png".format(q))
 
-        colorms = pd.read_csv('./tmp/msavi-arr.csv')
+        colorms = pd.read_csv(userfieldpth+'/msavi/msavi-arr.csv')
         color_palettems = sns.color_palette("RdYlGn",as_cmap=True)
 
         # Pass palette to plot and set axis ranges
@@ -1078,9 +1095,9 @@ def code():
                     xticklabels=False,
                     cbar=False
                 )
-        plt.savefig(dir_path+"/tmp/msplot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
-        # plotvi= dir_path+"/tmp/viplot/{}.jpg".format(a)
-        pathms.append("/msplot/{}.png".format(q))
+        plt.savefig(userfieldpth+"/msavi/msplot/{}.png".format(q),bbox_inches='tight',pad_inches=0,transparent=True)
+        # plotvi= basedir+"/tmp/viplot/{}.jpg".format(a)
+        pathms.append("/msavi/msplot/{}.png".format(q))
         a = a + 1
     if percent < 30:
         p1 = "Plantation less than 30% is not considered as optimal so kindly plant more trees."
@@ -1091,37 +1108,37 @@ def code():
     
    
    
-    datavi = pd.read_csv(dir_path+'/tmp/ndvi.csv', on_bad_lines='skip')
-    datami = pd.read_csv(dir_path+'/tmp/ndmi.csv', on_bad_lines='skip')
-    datare = pd.read_csv(dir_path+'/tmp/ndre.csv', on_bad_lines='skip')
-    datams = pd.read_csv(dir_path+'/tmp/msavi.csv', on_bad_lines='skip')
+    datavi = pd.read_csv(userfieldpth+'/ndvi/ndvi.csv', on_bad_lines='skip')
+    datami = pd.read_csv(userfieldpth+'/ndmi/ndmi.csv', on_bad_lines='skip')
+    datare = pd.read_csv(userfieldpth+'/ndre/ndre.csv', on_bad_lines='skip')
+    datams = pd.read_csv(userfieldpth+'/msavi/msavi.csv', on_bad_lines='skip')
 
     
-    temp_location = dir_path+'/tmp/'         #here
-    bucket_name = 'instant-node-238517.appspot.com'
+    # temp_location = basedir+'/tmp/'         #here
+    # bucket_name = 'instant-node-238517.appspot.com'
     
-    def cors_configuration(bucket_name):
-        """Set a bucket's CORS policies configuration."""
-        # bucket_name = "your-bucket-name"
+    # def cors_configuration(bucket_name):
+    #     """Set a bucket's CORS policies configuration."""
+    #     # bucket_name = "your-bucket-name"
 
-        storage_client = storage.Client()
-        bucket = storage_client.get_bucket(bucket_name)
-        bucket.cors = [
-            {
-                "origin": ["https://instant-node-238517.appspot.com","https://instant-node-238517.ew.r.appspot.com"],
-                "responseHeader": [
-                    "Content-Type",
-                    "x-goog-resumable"],
-                "method": ['PUT', 'POST', 'GET', 'DELETE', 'OPTIONS'],
-                "maxAgeSeconds": 3600
-            }
-        ]
-        bucket.patch()
+    #     storage_client = storage.Client()
+    #     bucket = storage_client.get_bucket(bucket_name)
+    #     bucket.cors = [
+    #         {
+    #             "origin": ["https://instant-node-238517.appspot.com","https://instant-node-238517.ew.r.appspot.com"],
+    #             "responseHeader": [
+    #                 "Content-Type",
+    #                 "x-goog-resumable"],
+    #             "method": ['PUT', 'POST', 'GET', 'DELETE', 'OPTIONS'],
+    #             "maxAgeSeconds": 3600
+    #         }
+    #     ]
+    #     bucket.patch()
 
-        # print(f"Set CORS policies for bucket {bucket.name} is {bucket.cors}")
-        return bucket
+    #     # print(f"Set CORS policies for bucket {bucket.name} is {bucket.cors}")
+    #     return bucket
     
-    cors_configuration(bucket_name)
+    # cors_configuration(bucket_name)
 
     # directory = os.fsencode(directory_in_str)
     
@@ -1129,32 +1146,32 @@ def code():
     
     
     
-    userid = current_user.get_id()
-    move_files_in_folder_to_cloud_storage(bucket_name, temp_location+'viplot',dest_dir=userid+'/'+str(field.fieldid)+'/'+'viplot')
-    move_files_in_folder_to_cloud_storage(bucket_name, temp_location+'miplot',dest_dir=userid+'/'+str(field.fieldid)+'/'+'miplot')
-    move_files_in_folder_to_cloud_storage(bucket_name, temp_location+'replot',dest_dir=userid+'/'+str(field.fieldid)+'/'+'replot')
-    move_files_in_folder_to_cloud_storage(bucket_name, temp_location+'msplot',dest_dir=userid+'/'+str(field.fieldid)+'/'+'msplot')
+    # userid = current_user.get_id()
+    # move_files_in_folder_to_cloud_storage(bucket_name, temp_location+'viplot',dest_dir=userid+'/'+str(field.fieldid)+'/'+'viplot')
+    # move_files_in_folder_to_cloud_storage(bucket_name, temp_location+'miplot',dest_dir=userid+'/'+str(field.fieldid)+'/'+'miplot')
+    # move_files_in_folder_to_cloud_storage(bucket_name, temp_location+'replot',dest_dir=userid+'/'+str(field.fieldid)+'/'+'replot')
+    # move_files_in_folder_to_cloud_storage(bucket_name, temp_location+'msplot',dest_dir=userid+'/'+str(field.fieldid)+'/'+'msplot')
 
 
     # image_url = "https://storage.googleapis.com/mybucket/" + filename
 
     
     # import shutil
-    folder = dir_path+'/tmp'
-    for filename in os.listdir(folder):
-        file_path = os.path.join(folder, filename)
-        try:
-            if os.path.isfile(file_path) or os.path.islink(file_path):
+    # folder = basedir+'/tmp'
+    # for filename in os.listdir(folder):
+    #     file_path = os.path.join(folder, filename)
+    #     try:
+    #         if os.path.isfile(file_path) or os.path.islink(file_path):
 
-                os.unlink(file_path)
+    #             os.unlink(file_path)
 
-            elif os.path.isdir(file_path):
+    #         elif os.path.isdir(file_path):
 
-                shutil.rmtree(file_path)
+    #             shutil.rmtree(file_path)
 
-        except Exception as e:
+    #     except Exception as e:
 
-            print('Failed to delete %s. Reason: %s' % (file_path, e))
+    #         print('Failed to delete %s. Reason: %s' % (file_path, e))
     
 
     datearray= datavi['date'].tolist()
