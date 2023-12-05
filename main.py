@@ -1,7 +1,4 @@
 from flask import Flask, render_template, make_response, url_for, request, redirect
-from google.auth import compute_engine
-from google.cloud import storage
-import copy as cp
 import json
 # from flask_firebase import FirebaseAuth update
 import firebase_admin.auth as auth
@@ -220,10 +217,7 @@ def map():
             centre["lat"] = sum([p["lat"] for p in feld])/len(feld)
             centre["lng"] = sum([p["lng"] for p in feld])/len(feld)
             centres.append(centre)
-        client = storage.Client()  # Implicit environ set-up
-        bucket_name = 'instant-node-238517.appspot.com'
-        bucket = client.bucket(bucket_name)       
-            
+        
     userid=current_user.get_id()
     return render_template("change.html", fieldsStr=fieldsinStr, centres=centres,user=current_user.name,fieldnames=fieldnames,fieldids=fieldids,userid=str(userid)) #pass fields to template
 
