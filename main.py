@@ -378,7 +378,8 @@ def code():
     # selfield_conv= int(selfield)
     # selfield_conv_type= type(selfield_conv)
     # credentials = compute_engine.Credentials(scopes=['https://www.googleapis.com/auth/earthengine'])
-    ee.Initialize()
+    ee.Authenticate()
+    ee.Initialize(project='instant-node-238517')
     
 
     # dt = datetime.date(2022, 4, 1)  # add the starting date according to your satellite, year, month, day
